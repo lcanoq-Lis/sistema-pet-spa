@@ -126,7 +126,7 @@
             <a href="{{ route('admin.productos.index') }}" class="sidebar-link">📦 Productos</a>
             <p class="sidebar-section">Inventario</p>
             <a href="#" class="sidebar-link" style="opacity:0.5; cursor:not-allowed;">📦 Productos</a>
-            <a href="#" class="sidebar-link" style="opacity:0.5; cursor:not-allowed;">✂️ Servicios</a>
+            <a href="{{ route('admin.servicios.index') }}" class="sidebar-link">✂️ Servicios</a>
 
             <p class="sidebar-section">Análisis</p>
             <a href="{{ route('admin.reportes.index') }}" class="sidebar-link">📊 Reportes</a>

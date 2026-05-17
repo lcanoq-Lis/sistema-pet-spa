@@ -132,5 +132,30 @@ class FichaController extends Controller
     return redirect()->route('groomer.agenda.index')
         ->with('status', '¡Servicio completado! Se notificó al cliente que puede recoger a su mascota. 🎉');
 }
+public function agregarFoto(Request $request, $id)
+{
+    $request->validate([
+        'tipo' => 'required|in:antes,despues',
+        'foto' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+    ], [
+        'tipo.required'  => 'El tipo de foto es obligatorio.',
+        'foto.required'  => 'Debes seleccionar una foto.',
+        'foto.image'     => 'El archivo debe ser una imagen.',
+        'foto.mimes'     => 'Solo se permiten JPG, PNG o WEBP.',
+        'foto.max'       => 'La imagen no debe superar 5MB.',
+    ]);
+
+    // Guardar imagen en storage/app/public/fotos-grooming
+    $path = $request->file('foto')->store('fotos-grooming', 'public');
+    $url  = asset('storage/' . $path);
+
+    FotoGrooming::create([
+        'ficha_id' => $id,
+        'tipo'     => $request->tipo,
+        'url'      => $url,
+    ]);
+
+    return back()->with('status', 'Foto agregada correctamente.');
+}
     
 }

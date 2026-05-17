@@ -16,6 +16,18 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Admin\AuditController;
 use App\Http\Controllers\Admin\NotificacionController;
 use App\Http\Controllers\Admin\ReporteController;
+use App\Http\Controllers\Admin\ServicioController;
+
+Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('servicios', ServicioController::class)->names([
+        'index'   => 'servicios.index',
+        'create'  => 'servicios.create',
+        'store'   => 'servicios.store',
+        'edit'    => 'servicios.edit',
+        'update'  => 'servicios.update',
+        'destroy' => 'servicios.destroy',
+    ]);
+});
 
 Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');

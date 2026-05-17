@@ -35,6 +35,60 @@
         </div>
     </div>
 
+    {{-- TARJETA DE EVIDENCIAS FOTOGRÁFICAS --}}
+    <div class="stat-card" style="margin-bottom:16px; background: #ffffff;">
+        <h3 style="font-size:16px; font-weight:700; color:#5d4037; margin-bottom:16px;">📸 Galería de Evidencias</h3>
+        
+        {{-- TU FORMULARIO VA AQUÍ (Solo visible si la ficha no está cerrada) --}}
+        @if(!$ficha->fecha_cierre)
+            <div style="margin-bottom: 20px;">
+                <form method="POST" action="{{ route('groomer.ficha.foto', $ficha->id) }}" enctype="multipart/form-data">
+                    @csrf
+                    <div style="display:grid; grid-template-columns:1fr auto auto; gap:12px; align-items:end;">
+                        <div>
+                            <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">
+                                📱 Selecciona una foto desde tu dispositivo
+                            </label>
+                            <input type="file" name="foto" accept="image/*" capture="environment" required
+                                style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; font-family:Poppins,sans-serif; background: white;">
+                            <p style="font-size:11px; color:#a1887f; margin-top:4px;">JPG, PNG o WEBP — máximo 5MB</p>
+                        </div>
+                        <div>
+                            <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">Tipo</label>
+                            <select name="tipo"
+                                style="border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif; background: white; height: 48px;">
+                                <option value="antes">📷 Antes</option>
+                                <option value="despues">✅ Después</option>
+                            </select>
+                        </div>
+                        <button type="submit"
+                            style="background:linear-gradient(135deg,#ff7043,#ff8f00); color:white; font-weight:600; padding:10px 20px; border-radius:10px; border:none; cursor:pointer; font-size:14px; font-family:Poppins,sans-serif; white-space:nowrap; height: 48px;">
+                            📸 Subir foto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        @endif
+
+        {{-- Muestrario de imágenes --}}
+        @if($ficha->fotos && $ficha->fotos->count() > 0)
+            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:12px; border-top: 1px solid #f5f0eb; padding-top: 16px;">
+                @foreach($ficha->fotos as $foto)
+                    <div style="position:relative; border: 1px solid #f5f0eb; border-radius:8px; overflow:hidden; aspect-ratio: 1 / 1; background:#f5f5f5;">
+                        <img src="{{ asset('storage/' . ($foto->ruta ?? $foto->url)) }}" alt="Foto Grooming" style="width:100%; height:100%; object-fit:cover;">
+                        <span style="position:absolute; bottom:4px; left:4px; background:rgba(0,0,0,0.6); color:white; font-size:10px; padding:2px 6px; border-radius:4px; font-family:Poppins,sans-serif; text-transform: capitalize;">
+                            {{ $foto->tipo }}
+                        </span>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div style="padding:20px; text-align:center; color:#a1887f; font-size:13px; border: 1px dashed #d7ccc8; border-radius:10px;">
+                📭 No hay fotos guardadas para este perrito todavía.
+            </div>
+        @endif
+    </div>
+
     {{-- Checklist --}}
 <form method="POST" action="{{ route('groomer.ficha.update', $ficha->id) }}">
     @csrf
@@ -96,6 +150,7 @@
         💾 Guardar cambios
     </button>
 </form>
+
     {{-- Cerrar ficha --}}
     @if(!$ficha->fecha_cierre)
     <form method="POST" action="{{ route('groomer.ficha.cerrar', $ficha->id) }}">
@@ -113,6 +168,7 @@
     @endif
 
 </div>
+
 <script>
 function toggleCheck(itemId) {
     const checkbox = document.getElementById('check-' + itemId);
