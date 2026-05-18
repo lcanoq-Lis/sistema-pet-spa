@@ -119,4 +119,27 @@ public static function enviarNotificacionGroomer(Cita $cita)
         // Si falla el email no interrumpir el flujo
     }
 }
+public static function enviarNotificacionRecepcion(Cita $cita)
+{
+    $cita->load(['mascota', 'servicio', 'groomer']);
+
+    // Buscar usuarios con rol recepcion
+    $recepcionistas = \App\Models\User::whereHas('rol', function($q) {
+        $q->where('nombre', 'recepcion');
+    })->where('activo', true)->get();
+
+    foreach ($recepcionistas as $recepcionista) {
+        try {
+            \Illuminate\Support\Facades\Mail::send('emails.notificacion_recepcion', [
+                'cita'          => $cita,
+                'recepcionista' => $recepcionista,
+            ], function($m) use ($recepcionista) {
+                $m->to($recepcionista->email)
+                  ->subject('📅 Nueva cita por confirmar - Pet Spa');
+            });
+        } catch (\Exception $e) {
+            // Si falla no interrumpir el flujo
+        }
+    }
+}
 }

@@ -20,14 +20,19 @@ class CitaController extends Controller
     }
 
     public function confirmar($id)
-    {
-        $cita = Cita::findOrFail($id);
-        $cita->estado = 'confirmada';
-        $cita->save();
-        NotificacionController::enviarConfirmacion($cita);
-        return back()->with('status', 'Cita confirmada correctamente.');
-    }
+{
+    $cita = Cita::findOrFail($id);
+    $cita->estado = 'confirmada';
+    $cita->save();
 
+    // Notificar al cliente
+    NotificacionController::enviarConfirmacion($cita);
+
+    // Notificar al groomer
+    NotificacionController::enviarNotificacionGroomer($cita->load(['mascota', 'servicio', 'groomer.usuario']));
+
+    return back()->with('status', 'Cita confirmada y notificaciones enviadas.');
+}
     public function iniciar($id)
     {
         $cita = Cita::findOrFail($id);
@@ -55,4 +60,5 @@ class CitaController extends Controller
 
         return back()->with('status', 'Cita cancelada.');
     }
+    
 }
