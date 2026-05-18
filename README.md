@@ -56,3 +56,121 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+# 🐾 Sistema Web para Spa de Mascotas - Pet Spa
+
+## 👤 Integrante
+| Nombre | Responsabilidad |
+|--------|----------------|
+| Cano Quispe Lisbeth Nicole | Desarrollo completo del sistema (Frontend, Backend, Base de datos) |
+
+---
+
+## 📋 Descripción del Proyecto
+Sistema web para la gestión integral de un Spa de Mascotas, desarrollado con Laravel 13 y MySQL. Permite gestionar citas, mascotas, servicios, grooming, inventario y notificaciones.
+
+---
+
+## ✅ Módulos Desarrollados
+
+### 🔐 Módulo de Autenticación
+- [x] Registro de clientes con verificación por email
+- [x] Login con bloqueo tras 5 intentos fallidos
+- [x] Login con Google (OAuth 2.0)
+- [x] 2FA para administrador (Google Authenticator)
+- [x] Sesión automática de 30 minutos
+- [x] Recuperar y cambiar contraseña
+- [x] Control de acceso por roles (RBAC)
+- [x] Panel de auditoría y logs
+
+### 👥 Módulo de Roles
+- [x] Administrador
+- [x] Recepción
+- [x] Groomer
+- [x] Cliente (Dueño de mascota)
+
+### 🐾 Módulo de Mascotas
+- [x] Registro de mascotas (especie, raza, peso, temperamento)
+- [x] Editar y eliminar mascotas
+- [x] Alertas de alergias y restricciones médicas
+
+### 📅 Módulo de Citas
+- [x] Solicitar citas (cliente)
+- [x] Validación de solapamiento de horarios
+- [x] Confirmar, iniciar, completar y cancelar citas (recepción)
+- [x] Cancelar citas con motivo (groomer)
+
+### ✂️ Módulo de Grooming
+- [x] Agenda del groomer
+- [x] Ficha técnica de grooming
+- [x] Checklist interactivo del servicio
+- [x] Fotos antes/después
+- [x] Cierre de ficha y notificación al cliente
+
+### 📦 Módulo de Inventario y Tienda
+- [x] Gestión de productos y categorías
+- [x] Control de stock con alertas de bajo inventario
+- [x] Tienda virtual con pedidos por WhatsApp
+
+### 🔔 Módulo de Notificaciones
+- [x] Email de confirmación de cita
+- [x] Email de mascota lista para recoger
+- [x] Notificación al groomer cuando le asignan una cita
+
+### 📊 Módulo de Reportes
+- [x] Dashboard ejecutivo con KPIs
+- [x] Citas por estado, groomer y servicio
+- [x] Ingresos del mes
+- [x] Top servicios
+
+### ✂️ Módulo de Servicios
+- [x] Gestión de servicios y precios
+- [x] Precios automáticos por tamaño de mascota
+
+---
+
+## ⏳ Funcionalidades Pendientes
+- [ ] Historial completo de servicios del cliente
+- [ ] Gestión de pagos y facturas
+- [ ] Registro de insumos usados por servicio
+
+---
+
+## 🛠️ Tecnologías Utilizadas
+- **Backend:** Laravel 13 (PHP 8.3)
+- **Frontend:** Blade + Tailwind CSS
+- **Base de datos:** MySQL 8.4
+- **Autenticación:** JWT, OAuth 2.0 (Google), 2FA (TOTP)
+- **Email:** Gmail SMTP
+- **Control de versiones:** Git + GitHub
+
+---
+
+## ⚙️ Instalación
+
+```bash
+git clone https://github.com/lcanoq-Lis/sistema-pet-spa.git
+cd sistema-pet-spa
+composer install
+npm install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+npm run build
+php artisan serve
+```
+
+---
+
+## 📅 Cronograma de Desarrollo
+
+| Fecha | Módulo |
+|-------|--------|
+| 17/05/2026 | Organización inicial y configuración del proyecto |
+| 19/05/2026 | Módulo de agenda y citas |
+| 21/05/2026 | Módulo de recepción y pagos |
+| 22/05/2026 | Módulo de grooming |
+| 25/05/2026 | Inventario y tienda |
+| 26/05/2026 | Seguridad y autenticación |
+| 27/05/2026 | Notificaciones y reportes |
+| 31/05/2026 | Presentación final |
