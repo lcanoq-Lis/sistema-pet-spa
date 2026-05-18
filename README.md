@@ -162,15 +162,3 @@ php artisan serve
 
 ---
 
-## 📅 Cronograma de Desarrollo
-
-| Fecha | Módulo |
-|-------|--------|
-| 17/05/2026 | Organización inicial y configuración del proyecto |
-| 19/05/2026 | Módulo de agenda y citas |
-| 21/05/2026 | Módulo de recepción y pagos |
-| 22/05/2026 | Módulo de grooming |
-| 25/05/2026 | Inventario y tienda |
-| 26/05/2026 | Seguridad y autenticación |
-| 27/05/2026 | Notificaciones y reportes |
-| 31/05/2026 | Presentación final |
