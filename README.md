@@ -68,10 +68,14 @@ Sistema web para la gestión integral de un Spa de Mascotas, desarrollado con La
 - [x] Gestión de servicios y precios
 - [x] Precios automáticos por tamaño de mascota
 
+### 📅 Módulo de Agenda
+- [x] Validación de solapamiento de horarios
+- [x] Bloqueo de agenda (feriados, mantenimiento, ausencias)
+- [x] Disponibilidad horaria por groomer
+
 ---
 
 ## ⏳ Funcionalidades Pendientes
-- [ ] Historial completo de servicios del cliente
 - [ ] Gestión de pagos y facturas
 - [ ] Registro de insumos usados por servicio
 

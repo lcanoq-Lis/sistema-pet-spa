@@ -145,10 +145,9 @@ public function agregarFoto(Request $request, $id)
         'foto.max'       => 'La imagen no debe superar 5MB.',
     ]);
 
-    // Guardar imagen en storage/app/public/fotos-grooming
+    // ✅ Así debe quedar
     $path = $request->file('foto')->store('fotos-grooming', 'public');
-    $url  = asset('storage/' . $path);
-
+    $url  = $path; // solo guarda la ruta relativa
     FotoGrooming::create([
         'ficha_id' => $id,
         'tipo'     => $request->tipo,
@@ -156,6 +155,17 @@ public function agregarFoto(Request $request, $id)
     ]);
 
     return back()->with('status', 'Foto agregada correctamente.');
+}
+public function eliminarFoto($fotoId)
+{
+    $foto = FotoGrooming::findOrFail($fotoId);
+    
+    // Eliminar archivo físico
+    \Illuminate\Support\Facades\Storage::disk('public')->delete($foto->url);
+    
+    $foto->delete();
+    
+    return back()->with('status', 'Foto eliminada.');
 }
     
 }

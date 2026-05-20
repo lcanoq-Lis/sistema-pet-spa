@@ -127,4 +127,19 @@ NotificacionController::enviarNotificacionRecepcion($cita);
         return redirect()->route('cliente.citas.index')
             ->with('status', 'Cita cancelada correctamente.');
     }
+    public function historial()
+{
+    $cliente = Cliente::where('usuario_id', Auth::id())->first();
+
+    $historial = Cita::whereHas('mascota', function ($q) use ($cliente) {
+        $q->whereHas('duenos', function ($q2) use ($cliente) {
+            $q2->where('cliente_id', $cliente->id);
+        });
+    })->with(['mascota', 'servicio', 'groomer'])
+      ->whereIn('estado', ['completada', 'cancelada', 'no_asistio'])
+      ->orderBy('fecha_hora_inicio', 'desc')
+      ->get();
+
+    return view('cliente.historial', compact('historial'));
+}
 }

@@ -156,6 +156,7 @@
             <a href="{{ route('cliente.citas.index') }}" class="sidebar-link">📅 Mis Citas</a>
             <a href="#" class="sidebar-link" style="opacity:0.5; cursor:not-allowed;">🧾 Mis Facturas</a>
             <a href="{{ route('tienda.index') }}" class="sidebar-link">🛍️ Tienda</a>
+            <a href="{{ route('cliente.historial') }}" class="sidebar-link">📋 Historial</a>
             @endif
 
     </nav>
