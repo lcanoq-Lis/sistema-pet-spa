@@ -84,6 +84,61 @@
                 <p style="font-size:12px; color:#bf360c;">{{ $mascota->alergias }}</p>
             </div>
             @endif
+            {{-- Vacunas --}}
+<div style="margin-top:12px;">
+    <p style="font-size:12px; font-weight:600; color:#5d4037; margin-bottom:6px;">💉 Vacunas:</p>
+    @if($mascota->vacunas->isEmpty())
+        <p style="font-size:12px; color:#a1887f;">Sin vacunas registradas.</p>
+    @else
+        @foreach($mascota->vacunas as $vacuna)
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #f5f0eb;">
+            <span style="font-size:12px; color:#5d4037;">{{ $vacuna->nombre_vacuna }}</span>
+            <span style="font-size:11px; color:{{ $vacuna->estaVigente() ? '#2e7d32' : '#c62828' }}; font-weight:600;">
+                {{ $vacuna->estaVigente() ? '✅ Vigente' : '⚠️ Vencida' }}
+            </span>
+        </div>
+        @if($vacuna->observaciones)
+        <a href="{{ $vacuna->observaciones }}" target="_blank"
+            style="font-size:11px; color:#1565c0;">📎 Ver archivo</a>
+        @endif
+        @endforeach
+    @endif
+</div>
+
+{{-- Agregar vacuna --}}
+<div style="margin-top:12px; border-top:1px solid #f5f0eb; padding-top:12px;">
+    <button type="button" onclick="toggleVacuna({{ $mascota->id }})"
+        style="background:#e3f2fd; color:#1565c0; border:none; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; font-family:Poppins,sans-serif;">
+        💉 Agregar vacuna
+    </button>
+    <div id="form-vacuna-{{ $mascota->id }}" style="display:none; margin-top:12px;">
+        <form method="POST" action="{{ route('cliente.mascotas.vacuna', $mascota->id) }}"
+            enctype="multipart/form-data">
+            @csrf
+            <input type="text" name="nombre_vacuna" placeholder="Nombre de la vacuna"
+                style="width:100%; border:2px solid #d7ccc8; border-radius:8px; padding:8px 10px; font-size:13px; outline:none; font-family:Poppins,sans-serif; margin-bottom:8px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+                <div>
+                    <label style="font-size:11px; color:#5d4037; font-weight:600;">Fecha aplicación</label>
+                    <input type="date" name="fecha_aplicacion"
+                        style="width:100%; border:2px solid #d7ccc8; border-radius:8px; padding:6px 8px; font-size:13px; outline:none; font-family:Poppins,sans-serif;">
+                </div>
+                <div>
+                    <label style="font-size:11px; color:#5d4037; font-weight:600;">Fecha vencimiento</label>
+                    <input type="date" name="fecha_vencimiento"
+                        style="width:100%; border:2px solid #d7ccc8; border-radius:8px; padding:6px 8px; font-size:13px; outline:none; font-family:Poppins,sans-serif;">
+                </div>
+            </div>
+            <input type="file" name="archivo" accept=".pdf,.jpg,.jpeg,.png"
+                style="width:100%; border:2px solid #d7ccc8; border-radius:8px; padding:6px 8px; font-size:12px; font-family:Poppins,sans-serif; margin-bottom:8px;">
+            <p style="font-size:11px; color:#a1887f; margin-bottom:8px;">PDF, JPG o PNG — máx 5MB</p>
+            <button type="submit"
+                style="width:100%; background:linear-gradient(135deg,#1565c0,#1976d2); color:white; font-weight:600; padding:8px; border-radius:8px; border:none; cursor:pointer; font-size:13px; font-family:Poppins,sans-serif;">
+                💉 Guardar vacuna
+            </button>
+        </form>
+    </div>
+</div>
 
             <div style="display:flex; gap:8px; margin-top:16px;">
                 <a href="{{ route('cliente.mascotas.edit', $mascota->id) }}"
@@ -140,6 +195,12 @@ function cerrarModal() {
 
 function confirmarEliminar() {
     if (formEliminar) formEliminar.submit();
+}
+</script>
+<script>
+function toggleVacuna(id) {
+    const div = document.getElementById('form-vacuna-' + id);
+    div.style.display = div.style.display === 'none' ? 'block' : 'none';
 }
 </script>
 @endsection

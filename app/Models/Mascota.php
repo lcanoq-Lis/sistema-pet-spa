@@ -42,4 +42,8 @@ class Mascota extends Model
             return $anos . ' ' . ($anos === 1 ? 'año' : 'años') . ' y ' . $meses . ' meses';
         }
     }
+    public function vacunas()
+{
+    return $this->hasMany(VacunaMascota::class, 'mascota_id');
+}
     }

@@ -80,6 +80,7 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
     // --------------------------------------------------------------------
     // GRUPO: CLIENTES
     // --------------------------------------------------------------------
+    Route::post('/cliente/mascotas/{id}/vacuna', [MascotaController::class, 'agregarVacuna'])->name('cliente.mascotas.vacuna');
     Route::get('/cliente/historial', [CitaController::class, 'historial'])->name('cliente.historial');
     
     Route::prefix('cliente')->name('cliente.')->group(function () {
@@ -91,6 +92,7 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
 
         // Mascotas (Mapea automáticamente index, store, update, etc. a cliente.mascotas.X)
         Route::resource('mascotas', MascotaController::class)->names('mascotas');
+       
 
     
     });

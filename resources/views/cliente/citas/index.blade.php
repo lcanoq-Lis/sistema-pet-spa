@@ -104,35 +104,120 @@
 
 {{-- Modal cancelar --}}
 <div id="modal-cancelar" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:white; border-radius:20px; padding:32px; max-width:380px; width:90%; text-align:center;">
-        <div style="font-size:56px; margin-bottom:16px;">⚠️</div>
-        <h3 style="font-size:20px; font-weight:700; color:#5d4037; margin-bottom:8px;">¿Cancelar esta cita?</h3>
-        <p style="font-size:14px; color:#a1887f; margin-bottom:24px;">Esta acción no se puede deshacer.</p>
-        <div style="display:flex; gap:12px;">
-            <button onclick="cerrarModalCancelar()"
-                style="flex:1; background:#f5f0eb; color:#8d6e63; font-weight:600; padding:12px; border-radius:10px; border:none; cursor:pointer; font-size:14px; font-family:Poppins,sans-serif;">
-                Volver
-            </button>
-            <button onclick="confirmarCancelar()"
-                style="flex:1; background:linear-gradient(135deg,#ef5350,#e53935); color:white; font-weight:600; padding:12px; border-radius:10px; border:none; cursor:pointer; font-size:14px; font-family:Poppins,sans-serif;">
-                Sí, cancelar
-            </button>
-        </div>
+    <div style="background:white; border-radius:20px; padding:32px; max-width:420px; width:90%; text-align:center;">
+        <div style="font-size:48px; margin-bottom:16px;">⚠️</div>
+        <h3 style="font-size:18px; font-weight:700; color:#5d4037; margin-bottom:8px;">Cancelar cita</h3>
+        <p style="font-size:13px; color:#a1887f; margin-bottom:16px;">Por favor indica el motivo de cancelación.</p>
+
+        <form id="form-cancelar" method="POST">
+            @csrf
+            @method('DELETE')
+
+            {{-- Motivo --}}
+            <div style="text-align:left; margin-bottom:16px;">
+                <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">
+                    Motivo de cancelación *
+                </label>
+                <select name="motivo" id="select-motivo"
+                    onchange="mostrarOtroMotivo(this)"
+                    style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif; margin-bottom:8px;"
+                    required>
+                    <option value="">Selecciona un motivo...</option>
+                    <option value="Problemas de salud de la mascota">🐾 Salud de la mascota</option>
+                    <option value="Problemas de salud del dueño">🏥 Salud del dueño</option>
+                    <option value="Emergencia familiar">🚨 Emergencia familiar</option>
+                    <option value="Falta de tiempo">⏰ Falta de tiempo</option>
+                    <option value="Cambio de planes">📅 Cambio de planes</option>
+                    <option value="otro">✏️ Otro motivo</option>
+                </select>
+                <div id="div-otro-motivo" style="display:none;">
+                    <input type="text" name="motivo_otro" placeholder="Especifica el motivo..."
+                        style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif;">
+                </div>
+            </div>
+
+            {{-- Política de cancelación --}}
+            <div style="background:#fff3e0; border-radius:10px; padding:12px 16px; margin-bottom:16px; text-align:left;">
+                <p style="font-size:13px; font-weight:600; color:#e65100; margin-bottom:8px;">📋 Política de cancelación:</p>
+                <ul style="font-size:12px; color:#bf360c; margin:0; padding-left:16px;">
+                    <li>Las cancelaciones deben realizarse con <strong>al menos 24 horas de anticipación</strong>.</li>
+                    <li>Cancelaciones tardías pueden afectar futuras reservas.</li>
+                    <li>El slot quedará disponible para otros clientes.</li>
+                </ul>
+            </div>
+
+            {{-- Aceptar términos --}}
+            <div style="display:flex; align-items:start; gap:10px; margin-bottom:20px; text-align:left;">
+                <input type="checkbox" id="acepta-terminos" required
+                    style="margin-top:3px; width:18px; height:18px; accent-color:#ff7043; flex-shrink:0;">
+                <label for="acepta-terminos" style="font-size:13px; color:#5d4037; cursor:pointer;">
+                    Entiendo y acepto la política de cancelación del Pet Spa.
+                </label>
+            </div>
+
+            <div style="display:flex; gap:12px;">
+                <button type="button" onclick="cerrarModalCancelar()"
+                    style="flex:1; background:#f5f0eb; color:#8d6e63; font-weight:600; padding:12px; border-radius:10px; border:none; cursor:pointer; font-family:Poppins,sans-serif;">
+                    Volver
+                </button>
+                <button type="submit"
+                    style="flex:1; background:linear-gradient(135deg,#ef5350,#e53935); color:white; font-weight:600; padding:12px; border-radius:10px; border:none; cursor:pointer; font-family:Poppins,sans-serif;">
+                    Confirmar cancelación
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
 let formCancelar = null;
+
 function abrirModalCancelar(form) {
     formCancelar = form;
     document.getElementById('modal-cancelar').style.display = 'flex';
 }
+
 function cerrarModalCancelar() {
     document.getElementById('modal-cancelar').style.display = 'none';
 }
-function confirmarCancelar() {
-    if (formCancelar) formCancelar.submit();
+
+function mostrarOtroMotivo(select) {
+    const div = document.getElementById('div-otro-motivo');
+    div.style.display = select.value === 'otro' ? 'block' : 'none';
 }
+
+document.getElementById('form-cancelar').addEventListener('submit', function(e) {
+    const select  = document.getElementById('select-motivo');
+    const terminos = document.getElementById('acepta-terminos');
+
+    if (!select.value) {
+        e.preventDefault();
+        alert('Por favor selecciona un motivo de cancelación.');
+        return;
+    }
+
+    if (!terminos.checked) {
+        e.preventDefault();
+        alert('Debes aceptar la política de cancelación.');
+        return;
+    }
+
+    // Si eligió "otro" usar el campo de texto
+    if (select.value === 'otro') {
+        const otro = document.querySelector('input[name="motivo_otro"]').value;
+        if (!otro) {
+            e.preventDefault();
+            alert('Por favor especifica el motivo.');
+            return;
+        }
+        select.value = otro;
+    }
+
+    if (formCancelar) {
+        this.action = formCancelar.action;
+        formCancelar = null;
+    }
+});
 </script>
 
 @endsection

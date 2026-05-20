@@ -62,7 +62,18 @@ public function store(Request $request)
         $groomer   = Groomer::where('activo', true)->first();
         $groomerId = $groomer?->id;
     }
+    // Verificar horario laboral y bloqueos
+    $disponibilidad = \App\Http\Controllers\Admin\HorarioController::verificarDisponibilidad(
+        $request->fecha,
+        $request->hora,
+        $groomerId
+    );
 
+    if (!$disponibilidad['disponible']) {
+        return back()->withErrors([
+            'hora' => $disponibilidad['motivo']
+        ])->withInput();
+    }
     // Verificar solapamiento
     $solapamiento = Cita::where('groomer_id', $groomerId)
         ->whereNotIn('estado', ['cancelada'])
@@ -107,26 +118,28 @@ NotificacionController::enviarNotificacionRecepcion($cita);
         ->with('status', '¡Cita solicitada correctamente! La recepción confirmará tu cita pronto. 📅');
 }
 
-    public function destroy($id)
-    {
-        $cliente = Cliente::where('usuario_id', Auth::id())->first();
-        $cita    = Cita::whereHas('mascota', function ($q) use ($cliente) {
-            $q->whereHas('duenos', function ($q2) use ($cliente) {
-                $q2->where('cliente_id', $cliente->id);
-            });
-        })->findOrFail($id);
+   public function destroy(Request $request, $id)
+{
+    $cliente = Cliente::where('usuario_id', Auth::id())->first();
+    $cita    = Cita::whereHas('mascota', function ($q) use ($cliente) {
+        $q->whereHas('duenos', function ($q2) use ($cliente) {
+            $q2->where('cliente_id', $cliente->id);
+        });
+    })->findOrFail($id);
 
-        if (!in_array($cita->estado, ['agendada', 'confirmada'])) {
-            return back()->withErrors(['error' => 'No puedes cancelar esta cita.']);
-        }
-
-        $cita->estado = 'cancelada';
-        $cita->save();
-        LogHelper::registrar('cita_cancelada', "Cita #{$id} cancelada por el cliente");
-
-        return redirect()->route('cliente.citas.index')
-            ->with('status', 'Cita cancelada correctamente.');
+    if (!in_array($cita->estado, ['agendada', 'confirmada'])) {
+        return back()->withErrors(['error' => 'No puedes cancelar esta cita.']);
     }
+
+    $cita->estado             = 'cancelada';
+    $cita->motivo_cancelacion = $request->motivo ?? 'Cancelada por el cliente';
+    $cita->save();
+
+    LogHelper::registrar('cita_cancelada', "Cita #{$id} cancelada. Motivo: {$cita->motivo_cancelacion}");
+
+    return redirect()->route('cliente.citas.index')
+        ->with('status', 'Cita cancelada correctamente.');
+}
     public function historial()
 {
     $cliente = Cliente::where('usuario_id', Auth::id())->first();

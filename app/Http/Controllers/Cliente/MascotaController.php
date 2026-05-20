@@ -19,7 +19,7 @@ class MascotaController extends Controller
             return redirect('/dashboard')->withErrors(['error' => 'No tienes perfil de cliente.']);
         }
 
-        $mascotas = $cliente->mascotas()->where('activo', true)->get();
+        $mascotas = $cliente->mascotas()->where('activo', true)->with('vacunas')->get();
 
         return view('cliente.mascotas.index', compact('mascotas'));
     }
@@ -118,6 +118,36 @@ class MascotaController extends Controller
         return redirect()->route('cliente.mascotas.index')
             ->with('status', 'Mascota actualizada correctamente.');
     }
+    public function agregarVacuna(Request $request, $id)
+{
+    $request->validate([
+        'nombre_vacuna'    => 'required|string|max:100',
+        'fecha_aplicacion' => 'required|date',
+        'fecha_vencimiento'=> 'nullable|date|after:fecha_aplicacion',
+        'archivo'          => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+    ], [
+        'nombre_vacuna.required'    => 'El nombre de la vacuna es obligatorio.',
+        'fecha_aplicacion.required' => 'La fecha de aplicación es obligatoria.',
+        'archivo.mimes'             => 'Solo se permiten PDF, JPG o PNG.',
+        'archivo.max'               => 'El archivo no debe superar 5MB.',
+    ]);
+
+    $archivoUrl = null;
+    if ($request->hasFile('archivo')) {
+        $path      = $request->file('archivo')->store('vacunas', 'public');
+        $archivoUrl = asset('storage/' . $path);
+    }
+
+    \App\Models\VacunaMascota::create([
+        'mascota_id'        => $id,
+        'nombre_vacuna'     => $request->nombre_vacuna,
+        'fecha_aplicacion'  => $request->fecha_aplicacion,
+        'fecha_vencimiento' => $request->fecha_vencimiento,
+        'observaciones'     => $archivoUrl,
+    ]);
+
+    return back()->with('status', 'Vacuna registrada correctamente.');
+}
 
     public function destroy($id)
     {
