@@ -31,6 +31,9 @@ use App\Http\Controllers\Cliente\TiendaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Recepcion\ClienteController as RecepcionClienteController;
 
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('recordatorios:enviar')->hourly();
 /*
 |--------------------------------------------------------------------------
 | RUTAS PÚBLICAS (Sin necesidad de Login)

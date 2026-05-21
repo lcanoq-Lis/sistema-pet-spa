@@ -93,16 +93,22 @@ class CitaController extends Controller
             return back()->withErrors(['hora' => 'Error crítico: La hora de finalización estimada no puede ser menor o igual al inicio.'])->withInput();
         }
 
-        // 4. Verificar solapamiento optimizado
-        $solapamiento = Cita::where('groomer_id', $cita->groomer_id)
+        // 4. Verificar solapamiento y capacidad simultánea
+        $citasEnHorario = Cita::where('groomer_id', $cita->groomer_id)
             ->where('id', '!=', $id)
             ->whereNotIn('estado', ['cancelada'])
             ->where('fecha_hora_inicio', '<', $fin)
             ->where('fecha_hora_fin_estimada', '>', $inicio)
-            ->exists();
+            ->count();
 
-        if ($solapamiento) {
-            return back()->withErrors(['hora' => 'El groomer ya tiene una cita en ese horario. Por favor elige otra hora.'])->withInput();
+        $groomer = Groomer::findOrFail($cita->groomer_id);
+
+        if ($citasEnHorario >= $groomer->capacidad_simultanea) {
+            return back()->withErrors([
+                'hora' => $groomer->capacidad_simultanea == 1
+                    ? 'El groomer ya tiene una cita en ese horario. Por favor elige otra hora.'
+                    : "El groomer ya alcanzó su capacidad máxima ({$groomer->capacidad_simultanea} citas simultáneas) en ese horario."
+            ])->withInput();
         }
 
         // 5. BLINDAJE CONTRA INTEGRIDAD DE BASE DE DATOS (Error 1452)

@@ -45,4 +45,8 @@ class Cita extends Model
     {
         return $this->hasOne(\App\Models\Pago::class);
     }
+        public function notificaciones()
+    {
+        return $this->hasMany(Notificacion::class);
+    }
 }

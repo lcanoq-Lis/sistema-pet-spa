@@ -74,19 +74,22 @@ public function store(Request $request)
             'hora' => $disponibilidad['motivo']
         ])->withInput();
     }
-   // 1. Verificamos si hay solapamiento con la regla optimizada
-        $solapamiento = Cita::where('groomer_id', $groomerId)
-            ->whereNotIn('estado', ['cancelada'])
-            ->where('fecha_hora_inicio', '<', $fin)         // Que empiece antes de que termine la nueva
-            ->where('fecha_hora_fin_estimada', '>', $inicio) // Y que termine después de que empiece la nueva
-            ->exists();
+   // Verificar solapamiento Y capacidad simultánea
+$citasEnHorario = Cita::where('groomer_id', $groomerId)
+    ->whereNotIn('estado', ['cancelada'])
+    ->where('fecha_hora_inicio', '<', $fin)
+    ->where('fecha_hora_fin_estimada', '>', $inicio)
+    ->count();
 
-        // 2. Si hay choque, mandamos el error hacia atrás
-        if ($solapamiento) {
-            return back()->withErrors([
-                'hora' => 'El groomer ya tiene una cita en ese horario. Por favor elige otra hora.'
-            ])->withInput();
-        }
+$groomer = Groomer::findOrFail($groomerId);
+
+if ($citasEnHorario >= $groomer->capacidad_simultanea) {
+    return back()->withErrors([
+        'hora' => $groomer->capacidad_simultanea == 1
+            ? 'El groomer ya tiene una cita en ese horario. Por favor elige otra hora.'
+            : "El groomer ya alcanzó su capacidad máxima ({$groomer->capacidad_simultanea} citas simultáneas) en ese horario."
+    ])->withInput();
+}
 
     // Crear la cita
     $cita = Cita::create([
