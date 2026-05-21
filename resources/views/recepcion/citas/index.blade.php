@@ -79,6 +79,7 @@
                             'completada'  => ['bg'=>'#f3e5f5', 'color'=>'#6a1b9a', 'label'=>'🎉 Completada'],
                             'cancelada'   => ['bg'=>'#ffebee', 'color'=>'#c62828', 'label'=>'❌ Cancelada'],
                             'no_asistio'  => ['bg'=>'#fafafa', 'color'=>'#757575', 'label'=>'😔 No asistió'],
+                            'en_revision' => ['bg'=>'#f3e5f5', 'color'=>'#6a1b9a', 'label'=>'🔍 En revisión'],
                         ];
                         $c = $colores[$cita->estado] ?? ['bg'=>'#f5f5f5', 'color'=>'#333', 'label'=>$cita->estado];
                     @endphp
@@ -115,12 +116,33 @@
                         </form>
                         @endif
 
+                        {{-- Botón Reprogramar (Agregado aquí junto a las demás acciones) --}}
+                        @if(!in_array($cita->estado, ['cancelada', 'completada']))
+                        <button type="button"
+                            onclick="abrirModalReprogramar({{ $cita->id }}, '{{ $cita->fecha_hora_inicio->format('Y-m-d') }}', '{{ $cita->fecha_hora_inicio->format('H:i') }}')"
+                            style="background:#e2f1e4; color:#1b5e20; border:none; padding:6px 10px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; font-family:Poppins,sans-serif;">
+                            📅 Reprogramar
+                        </button>
+                        @endif
+
                         @if(!in_array($cita->estado, ['cancelada', 'completada']))
                         <button type="button"
                             onclick="abrirModalCancelar({{ $cita->id }})"
                             style="background:#ffebee; color:#c62828; border:none; padding:6px 10px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; font-family:Poppins,sans-serif;">
                             ❌ Cancelar
                         </button>
+                        @endif
+
+                        @if($cita->estado === 'completada' && !$cita->pago)
+                        <a href="{{ route('recepcion.pagos.create', $cita->id) }}"
+                            style="padding:6px 10px; background:linear-gradient(135deg,#ff7043,#ff8f00); color:white; border-radius:6px; font-size:11px; font-weight:600; text-decoration:none;">
+                            💳 Pago
+                        </a>
+                        @elseif($cita->pago)
+                        <a href="{{ route('recepcion.pagos.factura', $cita->pago->id) }}"
+                            style="padding:6px 10px; background:#e8f5e9; color:#2e7d32; border-radius:6px; font-size:11px; font-weight:600; text-decoration:none;">
+                            🧾 Factura
+                        </a>
                         @endif
                     </div>
                 </td>
@@ -160,13 +182,64 @@
     </div>
 </div>
 
+{{-- Modal reprogramar (Agregado debajo del modal cancelar) --}}
+<div id="modal-reprogramar" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:20px; padding:32px; max-width:400px; width:90%; text-align:center;">
+        <div style="font-size:48px; margin-bottom:16px;">📅</div>
+        <h3 style="font-size:18px; font-weight:700; color:#5d4037; margin-bottom:16px;">Reprogramar cita</h3>
+        <form id="form-reprogramar" method="POST">
+            @csrf
+            <div style="margin-bottom:12px; text-align:left;">
+                <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">Nueva fecha</label>
+                <input type="date" name="fecha" id="reprogramar-fecha"
+                    min="{{ now()->format('Y-m-d') }}"
+                    style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif;">
+            </div>
+            <div style="margin-bottom:20px; text-align:left;">
+                <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">Nueva hora</label>
+                <select name="hora" id="reprogramar-hora"
+                    style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif;">
+                    @for($h = 9; $h <= 17; $h++)
+                        @foreach(['00', '30'] as $m)
+                            @php $hora = sprintf('%02d:%s', $h, $m); @endphp
+                            <option value="{{ $hora }}">{{ $hora }}</option>
+                        @endforeach
+                    @endfor
+                </select>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <button type="button" onclick="cerrarModalReprogramar()"
+                    style="flex:1; background:#f5f0eb; color:#8d6e63; font-weight:600; padding:12px; border-radius:10px; border:none; cursor:pointer; font-family:Poppins,sans-serif;">
+                    Cancelar
+                </button>
+                <button type="submit"
+                    style="flex:1; background:linear-gradient(135deg,#43a047,#66bb6a); color:white; font-weight:600; padding:12px; border-radius:10px; border:none; cursor:pointer; font-family:Poppins,sans-serif;">
+                    Reprogramar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+// Funciones para Cancelar
 function abrirModalCancelar(id) {
     document.getElementById('form-cancelar').action = '/recepcion/citas/' + id + '/cancelar';
     document.getElementById('modal-cancelar').style.display = 'flex';
 }
 function cerrarModalCancelar() {
     document.getElementById('modal-cancelar').style.display = 'none';
+}
+
+// Funciones para Reprogramar (Agregadas aquí)
+function abrirModalReprogramar(id, fecha, hora) {
+    document.getElementById('form-reprogramar').action = '/recepcion/citas/' + id + '/reprogramar';
+    document.getElementById('reprogramar-fecha').value = fecha;
+    document.getElementById('reprogramar-hora').value  = hora;
+    document.getElementById('modal-reprogramar').style.display = 'flex';
+}
+function cerrarModalReprogramar() {
+    document.getElementById('modal-reprogramar').style.display = 'none';
 }
 </script>
 

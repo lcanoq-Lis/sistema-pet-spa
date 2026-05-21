@@ -41,6 +41,7 @@
                     @foreach($mascotas as $mascota)
                         <option value="{{ $mascota->id }}"
                             data-tamano="{{ $mascota->tamano }}"
+                            data-temperamento="{{ $mascota->temperamento }}"
                             {{ old('mascota_id') == $mascota->id ? 'selected' : '' }}>
                             {{ $mascota->nombre }} ({{ strtoupper($mascota->tamano) }})
                         </option>
@@ -159,15 +160,28 @@ function actualizarDuracion() {
         return;
     }
 
-    const tamano    = mascotaOption.dataset.tamano;
-    const duracion  = parseInt(servicioOption.dataset.duracion);
-    const precio    = parseFloat(servicioOption.dataset.precio);
-    const factores  = JSON.parse(servicioOption.dataset.factores || '{}');
-    const factor    = factores[tamano] || 1.0;
-    const durFinal  = Math.ceil(duracion * factor);
+    const tamano       = mascotaOption.dataset.tamano;
+    const temperamento = mascotaOption.dataset.temperamento;
+    const duracion     = parseInt(servicioOption.dataset.duracion);
+    const precio       = parseFloat(servicioOption.dataset.precio);
+    const factores     = JSON.parse(servicioOption.dataset.factores || '{}');
+    const factor       = factores[tamano] || 1.0;
+    let durFinal       = Math.ceil(duracion * factor);
+
+    // Ajuste por temperamento
+    let avisoTemperamento = '';
+    if (temperamento === 'agresivo' || temperamento === 'nervioso') {
+        durFinal = Math.ceil(durFinal * 1.20);
+        avisoTemperamento = `<p style="font-size:12px; color:#c62828; margin-top:4px;">⚠️ Se agregó 20% de tiempo extra por temperamento ${temperamento}.</p>`;
+    }
 
     document.getElementById('texto-duracion').textContent = durFinal + ' minutos';
     document.getElementById('texto-precio').textContent   = precio.toFixed(2);
+    document.getElementById('div-duracion').innerHTML     = `
+        <p style="font-size:13px; color:#e65100; font-weight:600;">⏱️ Duración estimada: <span>${durFinal} minutos</span></p>
+        <p style="font-size:13px; color:#e65100; font-weight:600;">💰 Precio: Bs. <span>${precio.toFixed(2)}</span></p>
+        ${avisoTemperamento}
+    `;
     divDuracion.style.display = 'block';
 }
 </script>

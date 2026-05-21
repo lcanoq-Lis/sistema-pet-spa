@@ -36,4 +36,8 @@ class FichaGrooming extends Model
     {
         return $this->hasMany(FotoGrooming::class, 'ficha_id');
     }
+    public function insumos()
+{
+    return $this->hasMany(InsumoGrooming::class, 'ficha_id');
+}
 }

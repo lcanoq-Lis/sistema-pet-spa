@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\AuditController;
 use App\Http\Controllers\Admin\ProductoController;
 
 use App\Http\Controllers\Recepcion\CitaController as RecepcionCitaController;
+use App\Http\Controllers\Recepcion\PagoController;
+use App\Http\Controllers\Recepcion\CalendarioController;
 
 use App\Http\Controllers\Groomer\AgendaController;
 use App\Http\Controllers\Groomer\FichaController;
@@ -27,6 +29,7 @@ use App\Http\Controllers\Cliente\CitaController;
 use App\Http\Controllers\Cliente\TiendaController;
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Recepcion\ClienteController as RecepcionClienteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,25 +83,21 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
     // --------------------------------------------------------------------
     // GRUPO: CLIENTES
     // --------------------------------------------------------------------
-    Route::post('/cliente/mascotas/{id}/vacuna', [MascotaController::class, 'agregarVacuna'])->name('cliente.mascotas.vacuna');
-    Route::get('/cliente/historial', [CitaController::class, 'historial'])->name('cliente.historial');
-    
     Route::prefix('cliente')->name('cliente.')->group(function () {
-        // Citas
+        // Citas e Historial
         Route::get('/citas', [CitaController::class, 'index'])->name('citas.index');
         Route::get('/citas/crear', [CitaController::class, 'create'])->name('citas.create');
         Route::post('/citas', [CitaController::class, 'store'])->name('citas.store');
         Route::delete('/citas/{id}', [CitaController::class, 'destroy'])->name('citas.destroy');
+        Route::get('/historial', [CitaController::class, 'historial'])->name('historial');
 
-        // Mascotas (Mapea automáticamente index, store, update, etc. a cliente.mascotas.X)
-        Route::resource('mascotas', MascotaController::class)->names('mascotas');
-       
-
-    
+        // Mascotas & Vacunas
+        Route::post('/mascotas/{id}/vacuna', [MascotaController::class, 'agregarVacuna'])->name('mascotas.vacuna');
+        Route::resource('mascotas', MascotaController::class);
+        
+        // Tienda dentro del contexto del cliente
+        Route::get('/tienda', [TiendaController::class, 'index'])->name('tienda.index');
     });
-
-    // Tienda General Cliente
-    Route::get('/tienda', [TiendaController::class, 'index'])->name('tienda.index');
 
     // --------------------------------------------------------------------
     // GRUPO: GROOMERS
@@ -109,33 +108,58 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
         Route::post('/agenda/{id}/confirmar', [AgendaController::class, 'confirmar'])->name('agenda.confirmar');
         Route::post('/agenda/{id}/cancelar', [AgendaController::class, 'cancelar'])->name('agenda.cancelar');
 
-        // Fichas Clínicas / de Atención
+        // Fichas de Grooming
         Route::get('/ficha/crear/{citaId}', [FichaController::class, 'create'])->name('ficha.create');
         Route::post('/ficha', [FichaController::class, 'store'])->name('ficha.store');
         Route::get('/ficha/{id}/editar', [FichaController::class, 'edit'])->name('ficha.edit');
-        Route::post('/ficha/{id}/actualizar', [FichaController::class, 'update'])->name('ficha.update');
+        
+        // CORREGIDO: Ahora sí acepta PUT para coincidir perfectamente con edit.blade.php
+        Route::put('/ficha/{id}/actualizar', [FichaController::class, 'update'])->name('ficha.update'); 
         Route::post('/ficha/{id}/cerrar', [FichaController::class, 'cerrar'])->name('ficha.cerrar');
+        
+        // Fotos de Evidencia
         Route::post('/ficha/{id}/foto', [FichaController::class, 'agregarFoto'])->name('ficha.foto');
-        Route::delete('/ficha/foto/{fotoId}', [FichaController::class, 'eliminarFoto'])->name('ficha.foto.eliminar');
+        
+        // Ajustado de {fotoId} a {id} para mantener consistencia semántica en los parámetros
+        Route::delete('/ficha/foto/{id}', [FichaController::class, 'eliminarFoto'])->name('ficha.foto.eliminar');
+    
+        // Insumos de la Ficha
+        Route::post('/ficha/{id}/insumo', [FichaController::class, 'storeInsumo'])->name('ficha.insumo.store');
+        Route::delete('/ficha/{fichaId}/insumo/{insumoId}', [FichaController::class, 'destroyInsumo'])->name('ficha.insumo.destroy');
     });
 
     // --------------------------------------------------------------------
     // GRUPO: RECEPCIÓN
     // --------------------------------------------------------------------
     Route::prefix('recepcion')->name('recepcion.')->group(function () {
+        // Citas
         Route::get('/citas', [RecepcionCitaController::class, 'index'])->name('citas.index');
         Route::post('/citas/{id}/confirmar', [RecepcionCitaController::class, 'confirmar'])->name('citas.confirmar');
         Route::post('/citas/{id}/iniciar', [RecepcionCitaController::class, 'iniciar'])->name('citas.iniciar');
         Route::post('/citas/{id}/completar', [RecepcionCitaController::class, 'completar'])->name('citas.completar');
         Route::post('/citas/{id}/cancelar', [RecepcionCitaController::class, 'cancelar'])->name('citas.cancelar');
+
+        // Calendario de Flujo
+        Route::get('/calendario', [CalendarioController::class, 'index'])->name('calendario');
+
+        // Módulo de Pagos
+        Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
+        Route::get('/pagos/cita/{citaId}', [PagoController::class, 'create'])->name('pagos.create');
+        Route::post('/pagos/cita/{citaId}', [PagoController::class, 'store'])->name('pagos.store');
+        Route::get('/pagos/{pagoId}/factura', [PagoController::class, 'factura'])->name('pagos.factura');
+        Route::patch('/pagos/{pagoId}/anular', [PagoController::class, 'anular'])->name('pagos.anular');
+    
+        Route::get('/clientes', [RecepcionClienteController::class, 'index'])->name('clientes.index');
+        Route::get('/clientes/{id}', [RecepcionClienteController::class, 'show'])->name('clientes.show');
+        Route::post('/citas/{id}/reprogramar', [RecepcionCitaController::class, 'reprogramar'])->name('citas.reprogramar');
+        Route::get('/solicitudes', [RecepcionCitaController::class, 'solicitudes'])->name('solicitudes.index');
     });
 
     // --------------------------------------------------------------------
     // GRUPO: ADMINISTRACIÓN (ADMIN)
     // --------------------------------------------------------------------
     Route::prefix('admin')->name('admin.')->group(function () {
-        
-        // CRUDs (Resources simplificados)
+        // CRUDs Estándar
         Route::resource('servicios', ServicioController::class);
         Route::resource('productos', ProductoController::class);
 

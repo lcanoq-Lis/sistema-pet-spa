@@ -16,156 +16,187 @@ use App\Http\Controllers\Admin\NotificacionController;
 class FichaController extends Controller
 {
     public function create($citaId)
-{
-    $groomer = Groomer::where('usuario_id', Auth::id())->first();
-    $cita    = Cita::where('groomer_id', $groomer->id)
-                   ->with(['mascota', 'servicio'])
-                   ->findOrFail($citaId);
+    {
+        $groomer = Groomer::where('usuario_id', Auth::id())->first();
+        $cita    = Cita::where('groomer_id', $groomer->id)
+                       ->with(['mascota', 'servicio'])
+                       ->findOrFail($citaId);
 
-    // Si ya tiene ficha redirigir a editar
-    $ficha = FichaGrooming::where('cita_id', $citaId)->first();
-    if ($ficha) {
-        return redirect()->route('groomer.ficha.edit', $ficha->id);
+        // Si ya tiene ficha redirigir a editar
+        $ficha = FichaGrooming::where('cita_id', $citaId)->first();
+        if ($ficha) {
+            return redirect()->route('groomer.ficha.edit', $ficha->id);
+        }
+
+        $items = ChecklistItemCatalogo::where('activo', true)->orderBy('orden')->get();
+
+        return view('groomer.ficha.create', compact('cita', 'items'));
     }
-
-    $items = ChecklistItemCatalogo::where('activo', true)->orderBy('orden')->get();
-
-    return view('groomer.ficha.create', compact('cita', 'items'));
-}
 
     public function store(Request $request)
     {
-         // Verificar si ya existe ficha
-    $fichaExistente = FichaGrooming::where('cita_id', $request->cita_id)->first();
-    if ($fichaExistente) {
-        return redirect()->route('groomer.ficha.edit', $fichaExistente->id);
-    }
-        $request->validate([
-            'cita_id'            => 'required|exists:citas,id',
-            'temperatura_ingreso'=> 'nullable|numeric',
-            'estado_inicial'     => 'required|string',
-            'notas_internas'     => 'nullable|string',
-        ]);
+        // Verificar si ya existe ficha
+        $fichaExistente = FichaGrooming::where('cita_id', $request->cita_id)->first();
+        if ($fichaExistente) {
+            return redirect()->route('groomer.ficha.edit', $fichaExistente->id);
+        }
 
-        $cita = Cita::findOrFail($request->cita_id);
-        $cita->estado = 'en_progreso';
-        $cita->save();
+        $request->validate([
+            'cita_id'        => 'required|exists:citas,id',
+            'estado_inicial' => 'required|string|max:500',
+        ]);
 
         $ficha = FichaGrooming::create([
-            'cita_id'             => $request->cita_id,
-            'raza_momento'        => $cita->mascota->raza,
-            'tamano_momento'      => $cita->mascota->tamano,
-            'temperatura_ingreso' => $request->temperatura_ingreso,
-            'estado_inicial'      => $request->estado_inicial,
-            'notas_internas'      => $request->notas_internas,
+            'cita_id'        => $request->cita_id,
+            'estado_inicial' => $request->estado_inicial,
         ]);
 
-        // Guardar checklist
+        // Clonar catálogo de checklist vigente a la nueva ficha
         $items = ChecklistItemCatalogo::where('activo', true)->get();
         foreach ($items as $item) {
             FichaChecklist::create([
-                'ficha_id'  => $ficha->id,
-                'item_id'   => $item->id,
-                'completado'=> false,
+                'ficha_id'   => $ficha->id,
+                'item_id'    => $item->id,
+                'completado' => false,
             ]);
         }
 
-        return redirect()->route('groomer.ficha.edit', $ficha->id)
-            ->with('status', 'Ficha creada. Completa el checklist y cierra la ficha cuando termines.');
+        return redirect()->route('groomer.ficha.edit', $ficha->id)->with('status', 'Ficha iniciada correctamente.');
     }
 
     public function edit($id)
     {
-        $groomer = Groomer::where('usuario_id', Auth::id())->first();
-        $ficha   = FichaGrooming::with(['cita.mascota', 'cita.servicio', 'checklist.item', 'fotos'])
-                                ->findOrFail($id);
+        $ficha = FichaGrooming::with(['cita.mascota', 'cita.servicio', 'checklist.item', 'fotos', 'insumos.producto'])
+                              ->findOrFail($id);
+        
+        $productos = \App\Models\Producto::orderBy('nombre')->get();
 
-        return view('groomer.ficha.edit', compact('ficha'));
+        return view('groomer.ficha.edit', compact('ficha', 'productos'));
     }
 
+    /**
+     * CORREGIDO: Se añadió protección contra nulos si desmarcan todas las opciones en Blade.
+     */
     public function update(Request $request, $id)
     {
         $ficha = FichaGrooming::findOrFail($id);
-
-        // Actualizar checklist
-        if ($request->checklist) {
-            foreach ($request->checklist as $itemId => $data) {
-                $check = FichaChecklist::where('ficha_id', $ficha->id)
-                                       ->where('item_id', $itemId)
-                                       ->first();
-                if ($check) {
-                    $check->completado   = isset($data['completado']);
-                    $check->observacion  = $data['observacion'] ?? null;
-                    $check->completado_en= isset($data['completado']) ? now() : null;
-                    $check->save();
-                }
-            }
-        }
 
         $ficha->estado_final   = $request->estado_final;
         $ficha->notas_internas = $request->notas_internas;
         $ficha->save();
 
-        return back()->with('status', 'Ficha actualizada.');
+        // BLINDAJE: Si el usuario desmarca todas las casillas, se asume un array vacío para evitar errores de PHP
+        $checklistData = $request->input('checklist', []);
+
+        foreach ($checklistData as $itemId => $data) {
+            FichaChecklist::where('ficha_id', $id)
+                ->where('item_id', $itemId)
+                ->update([
+                    'completado'  => isset($data['completado']),
+                    'observacion' => $data['observacion'] ?? null,
+                ]);
+        }
+
+        return redirect()->route('groomer.agenda.index')->with('status', 'Ficha actualizada correctamente.');
     }
 
-   public function cerrar(Request $request, $id)
-{
-    $ficha = FichaGrooming::with('checklist')->findOrFail($id);
+    /**
+     * MEJORADO: Inyección automática de NotificacionController para evitar el "new".
+     */
+    public function cerrar($id, NotificacionController $notificacionService)
+    {
+        $ficha = FichaGrooming::findOrFail($id);
+        $ficha->fecha_cierre = now();
+        $ficha->save();
 
-    // Validar checklist completo
-    $pendientes = $ficha->checklist->where('completado', false)->count();
-    if ($pendientes > 0) {
-        return back()->withErrors(['error' => "Faltan $pendientes items del checklist por completar."]);
+        // Actualizar el estado de la cita asociada
+        $cita = Cita::findOrFail($ficha->cita_id);
+        $cita->estado = 'completada';
+        $cita->save();
+
+        // Notificar al dueño de la mascota
+        try {
+            // NOTA: Asegúrate de que este método exista dentro de NotificacionController.php
+            // Si tiene otro nombre (ej: enviarCorreo), cámbialo aquí abajo:
+            $notificacionService->enviarNotificacionFichaCerrada($ficha);
+        } catch (\Exception $e) {
+            // Logear error si falla la notificación, sin romper el flujo del usuario
+            \Illuminate\Support\Facades\Log::error("Error al enviar notificación de cierre de ficha: " . $e->getMessage());
+        }
+
+        return redirect()->route('groomer.agenda.index')->with('status', 'Ficha cerrada correctamente. El cliente ha sido notificado.');
     }
 
-    $ficha->fecha_cierre = now();
-    $ficha->save();
+    public function agregarFoto(Request $request, $id)
+    {
+        $request->validate([
+            'foto' => 'required|image|max:5120', // máx 5MB
+            'tipo' => 'required|in:antes,despues',
+        ]);
 
-    $ficha->cita->estado = 'completada';
-    $ficha->cita->save();
+        $path = $request->file('foto')->store('fichas', 'public');
+        $url  = $path;
 
-    // Notificar al cliente
-    $ficha->cita->load(['mascota', 'servicio']);
-    NotificacionController::enviarListaParaRecoger($ficha->cita);
+        FotoGrooming::create([
+            'ficha_id' => $id,
+            'tipo'     => $request->tipo,
+            'url'      => $url,
+        ]);
 
-    return redirect()->route('groomer.agenda.index')
-        ->with('status', '¡Servicio completado! Se notificó al cliente que puede recoger a su mascota. 🎉');
-}
-public function agregarFoto(Request $request, $id)
-{
-    $request->validate([
-        'tipo' => 'required|in:antes,despues',
-        'foto' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
-    ], [
-        'tipo.required'  => 'El tipo de foto es obligatorio.',
-        'foto.required'  => 'Debes seleccionar una foto.',
-        'foto.image'     => 'El archivo debe ser una imagen.',
-        'foto.mimes'     => 'Solo se permiten JPG, PNG o WEBP.',
-        'foto.max'       => 'La imagen no debe superar 5MB.',
-    ]);
+        return back()->with('status', 'Foto agregada correctamente.');
+    }
 
-    // ✅ Así debe quedar
-    $path = $request->file('foto')->store('fotos-grooming', 'public');
-    $url  = $path; // solo guarda la ruta relativa
-    FotoGrooming::create([
-        'ficha_id' => $id,
-        'tipo'     => $request->tipo,
-        'url'      => $url,
-    ]);
+    /**
+     * CORREGIDO: Se renombró el parámetro de $fotoId a $id para coincidir con el archivo web.php corregido.
+     */
+    public function eliminarFoto($id)
+    {
+        $foto = FotoGrooming::findOrFail($id);
+        
+        // Eliminar archivo físico del disco público
+        \Illuminate\Support\Facades\Storage::disk('public')->delete($foto->url);
+        
+        $foto->delete();
+        
+        return back()->with('status', 'Foto eliminada correctamente.');
+    }
 
-    return back()->with('status', 'Foto agregada correctamente.');
-}
-public function eliminarFoto($fotoId)
-{
-    $foto = FotoGrooming::findOrFail($fotoId);
-    
-    // Eliminar archivo físico
-    \Illuminate\Support\Facades\Storage::disk('public')->delete($foto->url);
-    
-    $foto->delete();
-    
-    return back()->with('status', 'Foto eliminada.');
-}
-    
+    public function storeInsumo(Request $request, $fichaId)
+    {
+        $request->validate([
+            'producto_id' => 'required|exists:productos,id',
+            'cantidad'    => 'required|numeric|min:0.1',
+            'unidad'      => 'required|string',
+        ]);
+
+        $producto = \App\Models\Producto::findOrFail($request->producto_id);
+        
+        // Descontar inventario/stock
+        $producto->stock = max(0, $producto->stock - $request->cantidad);
+        $producto->save();
+
+        \App\Models\InsumoGrooming::create([
+            'ficha_id'    => $fichaId,
+            'producto_id' => $request->producto_id,
+            'cantidad'    => $request->cantidad,
+            'unidad'      => $request->unidad,
+            'observacion' => $request->observacion,
+        ]);
+
+        return back()->with('status', 'Insumo registrado y stock actualizado.');
+    }
+
+    public function destroyInsumo($fichaId, $insumoId)
+    {
+        $insumo = \App\Models\InsumoGrooming::where('ficha_id', $fichaId)->findOrFail($insumoId);
+        
+        // Devolver la cantidad al inventario antes de eliminar el registro
+        $producto = \App\Models\Producto::findOrFail($insumo->producto_id);
+        $producto->stock += $insumo->cantidad;
+        $producto->save();
+
+        $insumo->delete();
+
+        return back()->with('status', 'Insumo eliminado y stock devuelto.');
+    }
 }

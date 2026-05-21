@@ -41,4 +41,8 @@ class Cita extends Model
     {
         return $this->belongsTo(User::class, 'creado_por_usuario_id');
     }
+        public function pago()
+    {
+        return $this->hasOne(\App\Models\Pago::class);
+    }
 }

@@ -68,6 +68,7 @@
                             'completada' => ['bg'=>'#f3e5f5', 'color'=>'#6a1b9a', 'label'=>'🎉 Completada'],
                             'cancelada'  => ['bg'=>'#ffebee', 'color'=>'#c62828', 'label'=>'❌ Cancelada'],
                             'no_asistio' => ['bg'=>'#fafafa', 'color'=>'#757575', 'label'=>'😔 No asistió'],
+                            'en_revision' => ['bg'=>'#f3e5f5', 'color'=>'#6a1b9a', 'label'=>'🔍 En revisión'],
                         ];
                         $c = $colores[$cita->estado] ?? ['bg'=>'#f5f5f5', 'color'=>'#333', 'label'=>$cita->estado];
                     @endphp

@@ -7,7 +7,7 @@
 
 {{-- Filtros --}}
 <div style="display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; align-items:center;">
-    <form method="GET" action="{{ route('tienda.index') }}" style="display:flex; gap:12px; flex-wrap:wrap; flex:1;">
+    <form method="GET" action="{{ route('cliente.tienda.index') }}" style="display:flex; gap:12px; flex-wrap:wrap; flex:1;">
         <input type="text" name="buscar" value="{{ request('buscar') }}"
             placeholder="🔍 Buscar producto..."
             style="border:2px solid #d7ccc8; border-radius:10px; padding:8px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif; flex:1; min-width:200px;">

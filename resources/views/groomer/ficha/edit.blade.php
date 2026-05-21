@@ -149,16 +149,18 @@
                     style="padding:9px 16px; border-radius:10px; background:#1565c0; color:white; font-weight:600; font-size:13px; border:none; cursor:pointer; font-family:Poppins,sans-serif;">
                     🎥 Activar
                 </button>
-                <button type="button" onclick="capturarFoto()" id="btn-capturar" style="display:none;"
-                    style="padding:9px 16px; border-radius:10px; background:linear-gradient(135deg,#ff7043,#ff8f00); color:white; font-weight:600; font-size:13px; border:none; cursor:pointer; font-family:Poppins,sans-serif;">
+                
+                {{-- CORRECCIÓN AQUÍ: Fusionados los atributos style duplicados en una sola cadena limpia --}}
+                <button type="button" onclick="capturarFoto()" id="btn-capturar"
+                    style="display:none; padding:9px 16px; border-radius:10px; background:linear-gradient(135deg,#ff7043,#ff8f00); color:white; font-weight:600; font-size:13px; border:none; cursor:pointer; font-family:Poppins,sans-serif;">
                     📸 Capturar
                 </button>
-                <button type="button" onclick="reiniciarCamara()" id="btn-reiniciar" style="display:none;"
-                    style="padding:9px 16px; border-radius:10px; border:2px solid #d7ccc8; background:white; color:#5d4037; font-weight:600; font-size:13px; cursor:pointer; font-family:Poppins,sans-serif;">
+                <button type="button" onclick="reiniciarCamara()" id="btn-reiniciar"
+                    style="display:none; padding:9px 16px; border-radius:10px; border:2px solid #d7ccc8; background:white; color:#5d4037; font-weight:600; font-size:13px; cursor:pointer; font-family:Poppins,sans-serif;">
                     🔄 Retomar
                 </button>
-                <button type="button" onclick="subirFoto('camara')" id="btn-subir-camara" style="display:none;"
-                    style="padding:9px 16px; border-radius:10px; background:linear-gradient(135deg,#2e7d32,#43a047); color:white; font-weight:600; font-size:13px; border:none; cursor:pointer; font-family:Poppins,sans-serif;">
+                <button type="button" onclick="subirFoto('camara')" id="btn-subir-camara"
+                    style="display:none; padding:9px 16px; border-radius:10px; background:linear-gradient(135deg,#2e7d32,#43a047); color:white; font-weight:600; font-size:13px; border:none; cursor:pointer; font-family:Poppins,sans-serif;">
                     📤 Subir
                 </button>
             </div>
@@ -245,6 +247,212 @@
             style="position:absolute; top:-12px; right:-12px; background:#ff7043; color:white; border:none; border-radius:50%; width:32px; height:32px; font-size:16px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.3);">✕</button>
     </div>
 </div>
+
+{{-- Checklist y formulario de actualización --}}
+<form method="POST" action="{{ route('groomer.ficha.update', $ficha->id) }}">
+    @csrf
+    @method('PUT')
+    <div class="stat-card" style="margin-bottom:16px;">
+        <h3 style="font-size:16px; font-weight:700; color:#5d4037; margin-bottom:16px;">✅ Checklist del servicio</h3>
+
+        @foreach($ficha->checklist as $check)
+        <div style="display:flex; align-items:start; gap:12px; padding:12px 0; border-bottom:1px solid #f5f0eb; cursor:pointer;"
+             onclick="toggleCheck({{ $check->item_id }})">
+            
+            <div id="box-{{ $check->item_id }}"
+                style="width:22px; height:22px; border-radius:6px; border:2px solid #d7ccc8; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; transition:all 0.2s;
+                {{ $check->completado ? 'background:linear-gradient(135deg,#ff7043,#ff8f00); border-color:#ff7043;' : '' }}">
+                @if($check->completado)
+                <span style="color:white; font-size:14px;">✓</span>
+                @endif
+            </div>
+
+            <input type="checkbox" 
+                name="checklist[{{ $check->item_id }}][completado]"
+                id="check-{{ $check->item_id }}"
+                {{ $check->completado ? 'checked' : '' }}
+                style="display:none;">
+
+            <div style="flex:1;">
+                <label style="font-size:14px; font-weight:600; color:#5d4037; cursor:pointer;
+                    {{ $check->completado ? 'text-decoration:line-through; color:#a1887f;' : '' }}"
+                    id="label-{{ $check->item_id }}">
+                    {{ $check->item->nombre }}
+                </label>
+                @if($check->item->requiere_observacion)
+                <input type="text" name="checklist[{{ $check->item_id }}][observacion]"
+                    value="{{ $check->observacion }}"
+                    placeholder="Observación requerida..."
+                    onclick="event.stopPropagation()"
+                    style="width:100%; border:1px solid #d7ccc8; border-radius:8px; padding:6px 10px; font-size:13px; outline:none; font-family:Poppins,sans-serif; margin-top:6px; box-sizing:border-box;">
+                @endif
+            </div>
+        </div>
+        @endforeach
+    </div>
+
+    <div class="stat-card" style="margin-bottom:16px;">
+        <h3 style="font-size:16px; font-weight:700; color:#5d4037; margin-bottom:12px;">📝 Estado final</h3>
+        <textarea name="estado_final" rows="3"
+            style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif; resize:vertical; box-sizing:border-box;"
+            placeholder="Describe el estado final de la mascota...">{{ $ficha->estado_final }}</textarea>
+
+        <div style="margin-top:12px;">
+            <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">Notas internas</label>
+            <textarea name="notas_internas" rows="2"
+                style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif; resize:vertical; box-sizing:border-box;"
+                placeholder="Notas solo para el equipo...">{{ $ficha->notas_internas }}</textarea>
+        </div>
+    </div>
+
+    <button type="submit"
+        style="width:100%; background:linear-gradient(135deg,#1565c0,#1976d2); color:white; font-weight:700; padding:12px; border-radius:10px; border:none; cursor:pointer; font-size:14px; font-family:Poppins,sans-serif; margin-bottom:16px;">
+        💾 Guardar cambios
+    </button>
+</form>
+
+{{-- CORRECCIÓN ESTRUCTURAL AQUÍ: El bloque de INSUMOS ahora se anida DENTRO del contenedor responsivo principal --}}
+@if(!$ficha->fecha_cierre)
+    {{-- TARJETA INSUMOS (Activa) --}}
+    <div class="stat-card" style="margin-bottom:16px; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+        <div style="background:linear-gradient(135deg,#2e7d32,#43a047); padding:16px 20px; display:flex; align-items:center; gap:10px;">
+            <span style="font-size:22px;">🧴</span>
+            <div>
+                <h3 style="font-size:15px; font-weight:700; color:white; margin:0;">Insumos utilizados</h3>
+                <p style="font-size:11px; color:rgba(255,255,255,0.8); margin:0;">Registra los productos usados en este servicio</p>
+            </div>
+            <div style="margin-left:auto; background:rgba(255,255,255,0.2); border-radius:20px; padding:4px 12px;">
+                <span style="color:white; font-size:12px; font-weight:600;" id="contador-insumos">
+                    {{ $ficha->insumos->count() }} producto(s)
+                </span>
+            </div>
+        </div>
+
+        <div style="padding:20px;">
+            <form method="POST" action="{{ route('groomer.ficha.insumo.store', $ficha->id) }}"
+                style="background:#f5f0eb; border-radius:14px; padding:16px; margin-bottom:20px;">
+                @csrf
+                <p style="font-size:13px; font-weight:700; color:#5d4037; margin-bottom:14px;">➕ Agregar insumo</p>
+
+                <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:700; color:#5d4037; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Producto *</label>
+                        <select name="producto_id" required
+                            style="width:100%; border:1.5px solid #d7ccc8; border-radius:10px; padding:9px 14px; font-size:13px; font-family:Poppins,sans-serif; outline:none; background:white; box-sizing:border-box;">
+                            <option value="">— Seleccionar producto —</option>
+                            @foreach($productos as $p)
+                                <option value="{{ $p->id }}" {{ $p->stock <= 0 ? 'disabled' : '' }}>
+                                    {{ $p->nombre }} (Stock: {{ $p->stock }}) {{ $p->stock <= $p->stock_minimo ? '⚠️' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:700; color:#5d4037; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Cantidad *</label>
+                        <input type="number" name="cantidad" min="0.1" step="0.1" value="1" required
+                            style="width:100%; border:1.5px solid #d7ccc8; border-radius:10px; padding:9px 14px; font-size:13px; font-family:Poppins,sans-serif; outline:none; box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:700; color:#5d4037; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Unidad</label>
+                        <select name="unidad"
+                            style="width:100%; border:1.5px solid #d7ccc8; border-radius:10px; padding:9px 14px; font-size:13px; font-family:Poppins,sans-serif; outline:none; background:white; box-sizing:border-box;">
+                            <option value="unidad">Unidad</option>
+                            <option value="ml">ml</option>
+                            <option value="g">g</option>
+                            <option value="aplicacion">Aplicación</option>
+                            <option value="chorro">Chorro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:12px;">
+                    <label style="display:block; font-size:11px; font-weight:700; color:#5d4037; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Observación <span style="color:#a1887f; font-weight:400; text-transform:none;">(opcional)</span></label>
+                    <input type="text" name="observacion" maxlength="200"
+                        placeholder="Ej: se aplicó shampoo especial para piel sensible..."
+                        style="width:100%; border:1.5px solid #d7ccc8; border-radius:10px; padding:9px 14px; font-size:13px; font-family:Poppins,sans-serif; outline:none; box-sizing:border-box;">
+                </div>
+
+                <button type="submit"
+                    style="background:linear-gradient(135deg,#2e7d32,#43a047); color:white; font-weight:700; padding:9px 20px; border-radius:10px; border:none; cursor:pointer; font-size:13px; font-family:Poppins,sans-serif; box-shadow:0 2px 8px rgba(46,125,50,0.35);">
+                    ✅ Registrar insumo
+                </button>
+            </form>
+
+            @if($ficha->insumos->count() > 0)
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    @foreach($ficha->insumos as $insumo)
+                    <div style="display:flex; align-items:center; gap:12px; background:#f9f9f9; border:1px solid #f0ebe5; border-radius:10px; padding:10px 14px;">
+                        <div style="background:linear-gradient(135deg,#2e7d32,#43a047); border-radius:8px; width:36px; height:36px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;">🧴</div>
+                        <div style="flex:1;">
+                            <p style="font-size:13px; font-weight:700; color:#5d4037; margin:0;">{{ $insumo->producto->nombre }}</p>
+                            <p style="font-size:12px; color:#a1887f; margin:2px 0 0;">
+                                {{ $insumo->cantidad }} {{ $insumo->unidad }} @if($insumo->observacion) · {{ $insumo->observacion }} @endif
+                            </p>
+                        </div>
+                        <div style="text-align:right;">
+                            <p style="font-size:11px; color:#a1887f; margin:0;">Stock restante</p>
+                            <p style="font-size:13px; font-weight:700; color:{{ $insumo->producto->stock <= $insumo->producto->stock_minimo ? '#c62828' : '#2e7d32' }}; margin:0;">
+                                {{ $insumo->producto->stock }} u.
+                            </p>
+                        </div>
+                        <form method="POST" action="{{ route('groomer.ficha.insumo.destroy', [$ficha->id, $insumo->id]) }}">
+                            @csrf @method('DELETE')
+                            <button type="submit" onclick="return confirm('¿Eliminar este insumo?')"
+                                style="background:#fff5f5; color:#c62828; border:1px solid #ffcdd2; border-radius:8px; padding:6px 10px; font-size:12px; cursor:pointer; font-family:Poppins,sans-serif;">✕</button>
+                        </form>
+                    </div>
+                    @endforeach
+                </div>
+            @else
+                <div style="text-align:center; padding:24px; border:2px dashed #d7ccc8; border-radius:12px; color:#a1887f;">
+                    <div style="font-size:32px; margin-bottom:8px;">🧴</div>
+                    <p style="font-size:13px; margin:0;">No se han registrado insumos aún.</p>
+                </div>
+            @endif
+        </div>
+    </div>
+@else
+    {{-- Ficha cerrada: Solo lectura de insumos --}}
+    @if($ficha->insumos->count() > 0)
+    <div class="stat-card" style="margin-bottom:16px; border-radius:16px; overflow:hidden; background: #fff; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+        <div style="background:linear-gradient(135deg,#2e7d32,#43a047); padding:14px 20px; display:flex; align-items:center; gap:10px;">
+            <span style="font-size:20px;">🧴</span>
+            <h3 style="font-size:14px; font-weight:700; color:white; margin:0;">Insumos utilizados ({{ $ficha->insumos->count() }})</h3>
+        </div>
+        <div style="padding:16px; display:flex; flex-direction:column; gap:8px;">
+            @foreach($ficha->insumos as $insumo)
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#f5f0eb; border-radius:8px;">
+                <div>
+                    <p style="font-size:13px; font-weight:600; color:#5d4037; margin:0;">🧴 {{ $insumo->producto->nombre }}</p>
+                    @if($insumo->observacion)
+                        <p style="font-size:11px; color:#a1887f; margin:2px 0 0;">{{ $insumo->observacion }}</p>
+                    @endif
+                </div>
+                <span style="font-size:13px; font-weight:700; color:#2e7d32;">{{ $insumo->cantidad }} {{ $insumo->unidad }}</span>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+@endif
+
+    {{-- Botón final para Cerrar ficha --}}
+    @if(!$ficha->fecha_cierre)
+    <form method="POST" action="{{ route('groomer.ficha.cerrar', $ficha->id) }}">
+        @csrf
+        <button type="submit"
+            onclick="return confirm('¿Cerrar la ficha? El cliente será notificado que puede recoger a su mascota.')"
+            style="width:100%; background:linear-gradient(135deg,#2e7d32,#43a047); color:white; font-weight:700; padding:14px; border-radius:10px; border:none; cursor:pointer; font-size:15px; font-family:Poppins,sans-serif; margin-bottom:20px;">
+            🎉 Cerrar ficha y notificar al cliente
+        </button>
+    </form>
+    @else
+    <div style="background:#e8f5e9; color:#2e7d32; border-radius:10px; padding:14px; text-align:center; font-weight:600; margin-bottom:20px;">
+        ✅ Ficha cerrada el {{ $ficha->fecha_cierre->format('d/m/Y H:i') }}
+    </div>
+    @endif
+
+</div> {{-- CORRECCIÓN: El div de 700px cierra de forma segura cubriendo todo el layout --}}
 
 <script>
 const FICHA_ID = {{ $ficha->id }};
@@ -454,110 +662,8 @@ function cerrarModalFoto() {
     document.body.style.overflow = '';
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModalFoto(); });
-</script>
 
-
-
-        {{-- Muestrario de imágenes --}}
-        @if($ficha->fotos && $ficha->fotos->count() > 0)
-            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap:12px; border-top: 1px solid #f5f0eb; padding-top: 16px;">
-                @foreach($ficha->fotos as $foto)
-                    <div style="position:relative; border: 1px solid #f5f0eb; border-radius:8px; overflow:hidden; aspect-ratio: 1 / 1; background:#f5f5f5;">
-                        <img src="{{ asset('storage/' . ($foto->ruta ?? $foto->url)) }}" alt="Foto Grooming" style="width:100%; height:100%; object-fit:cover;">
-                        <span style="position:absolute; bottom:4px; left:4px; background:rgba(0,0,0,0.6); color:white; font-size:10px; padding:2px 6px; border-radius:4px; font-family:Poppins,sans-serif; text-transform: capitalize;">
-                            {{ $foto->tipo }}
-                        </span>
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <div style="padding:20px; text-align:center; color:#a1887f; font-size:13px; border: 1px dashed #d7ccc8; border-radius:10px;">
-                📭 No hay fotos guardadas para este perrito todavía.
-            </div>
-        @endif
-    </div>
-
-    {{-- Checklist --}}
-<form method="POST" action="{{ route('groomer.ficha.update', $ficha->id) }}">
-    @csrf
-    <div class="stat-card" style="margin-bottom:16px;">
-        <h3 style="font-size:16px; font-weight:700; color:#5d4037; margin-bottom:16px;">✅ Checklist del servicio</h3>
-
-        @foreach($ficha->checklist as $check)
-        <div style="display:flex; align-items:start; gap:12px; padding:12px 0; border-bottom:1px solid #f5f0eb; cursor:pointer;"
-             onclick="toggleCheck({{ $check->item_id }})">
-            
-            <div id="box-{{ $check->item_id }}"
-                style="width:22px; height:22px; border-radius:6px; border:2px solid #d7ccc8; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; transition:all 0.2s;
-                {{ $check->completado ? 'background:linear-gradient(135deg,#ff7043,#ff8f00); border-color:#ff7043;' : '' }}">
-                @if($check->completado)
-                <span style="color:white; font-size:14px;">✓</span>
-                @endif
-            </div>
-
-            <input type="checkbox" 
-                name="checklist[{{ $check->item_id }}][completado]"
-                id="check-{{ $check->item_id }}"
-                {{ $check->completado ? 'checked' : '' }}
-                style="display:none;">
-
-            <div style="flex:1;">
-                <label style="font-size:14px; font-weight:600; color:#5d4037; cursor:pointer;
-                    {{ $check->completado ? 'text-decoration:line-through; color:#a1887f;' : '' }}"
-                    id="label-{{ $check->item_id }}">
-                    {{ $check->item->nombre }}
-                </label>
-                @if($check->item->requiere_observacion)
-                <input type="text" name="checklist[{{ $check->item_id }}][observacion]"
-                    value="{{ $check->observacion }}"
-                    placeholder="Observación requerida..."
-                    onclick="event.stopPropagation()"
-                    style="width:100%; border:1px solid #d7ccc8; border-radius:8px; padding:6px 10px; font-size:13px; outline:none; font-family:Poppins,sans-serif; margin-top:6px;">
-                @endif
-            </div>
-        </div>
-        @endforeach
-    </div>
-
-    <div class="stat-card" style="margin-bottom:16px;">
-        <h3 style="font-size:16px; font-weight:700; color:#5d4037; margin-bottom:12px;">📝 Estado final</h3>
-        <textarea name="estado_final" rows="3"
-            style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif; resize:vertical;"
-            placeholder="Describe el estado final de la mascota...">{{ $ficha->estado_final }}</textarea>
-
-        <div style="margin-top:12px;">
-            <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">Notas internas</label>
-            <textarea name="notas_internas" rows="2"
-                style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif; resize:vertical;"
-                placeholder="Notas solo para el equipo...">{{ $ficha->notas_internas }}</textarea>
-        </div>
-    </div>
-
-    <button type="submit"
-        style="width:100%; background:linear-gradient(135deg,#1565c0,#1976d2); color:white; font-weight:700; padding:12px; border-radius:10px; border:none; cursor:pointer; font-size:14px; font-family:Poppins,sans-serif; margin-bottom:12px;">
-        💾 Guardar cambios
-    </button>
-</form>
-
-    {{-- Cerrar ficha --}}
-    @if(!$ficha->fecha_cierre)
-    <form method="POST" action="{{ route('groomer.ficha.cerrar', $ficha->id) }}">
-        @csrf
-        <button type="submit"
-            onclick="return confirm('¿Cerrar la ficha? El cliente será notificado que puede recoger a su mascota.')"
-            style="width:100%; background:linear-gradient(135deg,#2e7d32,#43a047); color:white; font-weight:700; padding:14px; border-radius:10px; border:none; cursor:pointer; font-size:15px; font-family:Poppins,sans-serif;">
-            🎉 Cerrar ficha y notificar al cliente
-        </button>
-    </form>
-    @else
-    <div style="background:#e8f5e9; color:#2e7d32; border-radius:10px; padding:14px; text-align:center; font-weight:600;">
-        ✅ Ficha cerrada el {{ $ficha->fecha_cierre->format('d/m/Y H:i') }}
-    </div>
-    @endif
-
-</div>
-
-<script>
+// ── Checklist interactivo ──────────────────────────────────────
 function toggleCheck(itemId) {
     const checkbox = document.getElementById('check-' + itemId);
     const box      = document.getElementById('box-' + itemId);

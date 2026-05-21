@@ -51,7 +51,7 @@ public function store(Request $request)
 
     $servicio  = Servicio::findOrFail($request->servicio_id);
     $mascota   = \App\Models\Mascota::findOrFail($request->mascota_id);
-    $duracion  = $servicio->duracionParaTamano($mascota->tamano);
+    $duracion = $servicio->duracionParaTamano($mascota->tamano, $mascota->temperamento);
 
     $inicio = \Carbon\Carbon::parse($request->fecha . ' ' . $request->hora);
     $fin    = $inicio->copy()->addMinutes($duracion);
@@ -74,23 +74,19 @@ public function store(Request $request)
             'hora' => $disponibilidad['motivo']
         ])->withInput();
     }
-    // Verificar solapamiento
-    $solapamiento = Cita::where('groomer_id', $groomerId)
-        ->whereNotIn('estado', ['cancelada'])
-        ->where(function($q) use ($inicio, $fin) {
-            $q->whereBetween('fecha_hora_inicio', [$inicio, $fin])
-              ->orWhereBetween('fecha_hora_fin_estimada', [$inicio, $fin])
-              ->orWhere(function($q2) use ($inicio, $fin) {
-                  $q2->where('fecha_hora_inicio', '<=', $inicio)
-                     ->where('fecha_hora_fin_estimada', '>=', $fin);
-              });
-        })->exists();
+   // 1. Verificamos si hay solapamiento con la regla optimizada
+        $solapamiento = Cita::where('groomer_id', $groomerId)
+            ->whereNotIn('estado', ['cancelada'])
+            ->where('fecha_hora_inicio', '<', $fin)         // Que empiece antes de que termine la nueva
+            ->where('fecha_hora_fin_estimada', '>', $inicio) // Y que termine después de que empiece la nueva
+            ->exists();
 
-    if ($solapamiento) {
-        return back()->withErrors([
-            'hora' => 'El groomer ya tiene una cita en ese horario. Por favor elige otra hora.'
-        ])->withInput();
-    }
+        // 2. Si hay choque, mandamos el error hacia atrás
+        if ($solapamiento) {
+            return back()->withErrors([
+                'hora' => 'El groomer ya tiene una cita en ese horario. Por favor elige otra hora.'
+            ])->withInput();
+        }
 
     // Crear la cita
     $cita = Cita::create([
@@ -98,7 +94,7 @@ public function store(Request $request)
         'groomer_id'              => $groomerId,
         'servicio_id'             => $request->servicio_id,
         'creado_por_usuario_id'   => Auth::id(),
-        'estado'                  => 'agendada',
+        'estado'                  => 'en_revision',
         'fecha_hora_inicio'       => $inicio,
         'fecha_hora_fin_estimada' => $fin,
         'precio_acordado'         => $servicio->precio_base,
@@ -115,7 +111,7 @@ NotificacionController::enviarNotificacionRecepcion($cita);
     LogHelper::registrar('cita_creada', "Cita creada para mascota: {$mascota->nombre} - Servicio: {$servicio->nombre}");
 
     return redirect()->route('cliente.citas.index')
-        ->with('status', '¡Cita solicitada correctamente! La recepción confirmará tu cita pronto. 📅');
+    ->with('status', '¡Cita solicitada correctamente! Está en revisión, la recepción la confirmará pronto. 📅');
 }
 
    public function destroy(Request $request, $id)

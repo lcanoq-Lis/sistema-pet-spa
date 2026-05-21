@@ -12,8 +12,9 @@ class NotificacionController extends Controller
 {
     public function index()
     {
+        // CAMBIADO: Se reemplazó 'created_at' por 'creado_en' que es el estándar de tu base de datos
         $notificaciones = Notificacion::with(['cliente', 'cita.mascota'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('creado_en', 'desc') 
             ->paginate(20);
 
         return view('admin.notificaciones.index', compact('notificaciones'));

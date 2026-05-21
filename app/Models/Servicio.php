@@ -22,10 +22,17 @@ class Servicio extends Model
         'precio_base' => 'decimal:2',
     ];
 
-    public function duracionParaTamano($tamano)
+    public function duracionParaTamano($tamano, $temperamento = null)
     {
         $factores = $this->factor_tamano_raza ?? [];
-        $factor = $factores[$tamano] ?? 1.0;
-        return (int) ceil($this->duracion_base_minutos * $factor);
+        $factor   = $factores[$tamano] ?? 1.0;
+        $duracion = (int) ceil($this->duracion_base_minutos * $factor);
+
+        // Ajuste por temperamento nervioso o agresivo
+        if (in_array($temperamento, ['agresivo', 'nervioso'])) {
+            $duracion = (int) ceil($duracion * 1.20);
+        }
+
+        return $duracion;
     }
-}
+    }

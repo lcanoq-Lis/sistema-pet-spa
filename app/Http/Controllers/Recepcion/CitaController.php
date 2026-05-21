@@ -12,7 +12,7 @@ class CitaController extends Controller
 {
     public function index()
     {
-        $citas = Cita::with(['mascota', 'servicio', 'groomer', 'creadoPor'])
+        $citas = Cita::with(['mascota', 'servicio', 'groomer', 'creadoPor', 'pago'])
             ->orderBy('fecha_hora_inicio', 'asc')
             ->get();
 
@@ -60,5 +60,76 @@ class CitaController extends Controller
 
         return back()->with('status', 'Cita cancelada.');
     }
-    
+    public function reprogramar(Request $request, $id)
+    {
+        $request->validate([
+            'fecha' => 'required|date|after_or_equal:today',
+            'hora'  => 'required',
+        ], [
+            'fecha.required'       => 'La fecha es obligatoria.',
+            'fecha.after_or_equal' => 'La fecha debe ser hoy o posterior.',
+            'hora.required'        => 'La hora es obligatoria.',
+        ]);
+
+        $cita = Cita::findOrFail($id);
+
+        // 1. Obtener el nuevo inicio
+        $inicio = \Carbon\Carbon::parse($request->fecha . ' ' . $request->hora);
+        
+        // 2. Forzar parseo de fechas antiguas
+        $fechaInicioAntigua = \Carbon\Carbon::parse($cita->fecha_hora_inicio);
+        $fechaFinAntigua    = \Carbon\Carbon::parse($cita->fecha_hora_fin_estimada);
+        
+        $duracion = abs($fechaFinAntigua->diffInMinutes($fechaInicioAntigua));
+        
+        if ($duracion === 0) {
+            $duracion = 60; 
+        }
+
+        // 3. Calculamos el nuevo fin
+        $fin = $inicio->copy()->addMinutes($duracion);
+
+        if ($fin->lessThanOrEqualTo($inicio)) {
+            return back()->withErrors(['hora' => 'Error crítico: La hora de finalización estimada no puede ser menor o igual al inicio.'])->withInput();
+        }
+
+        // 4. Verificar solapamiento optimizado
+        $solapamiento = Cita::where('groomer_id', $cita->groomer_id)
+            ->where('id', '!=', $id)
+            ->whereNotIn('estado', ['cancelada'])
+            ->where('fecha_hora_inicio', '<', $fin)
+            ->where('fecha_hora_fin_estimada', '>', $inicio)
+            ->exists();
+
+        if ($solapamiento) {
+            return back()->withErrors(['hora' => 'El groomer ya tiene una cita en ese horario. Por favor elige otra hora.'])->withInput();
+        }
+
+        // 5. BLINDAJE CONTRA INTEGRIDAD DE BASE DE DATOS (Error 1452)
+        // Verificamos dinámicamente si el ID del usuario autenticado existe en la tabla que MySQL está buscando.
+        // Si no existe (debido a inconsistencias en la migración), le asignamos null para que no falle.
+        $usuarioExiste = \Illuminate\Support\Facades\DB::table('users')->where('id', auth()->id())->exists() 
+            || \Illuminate\Support\Facades\DB::table('usuarios')->where('id', auth()->id())->exists();
+
+        // 6. Guardar cambios de reprogramación
+        $cita->reprogramada_desde_id   = $cita->id;
+        $cita->reprogramada_por_id     = $usuarioExiste ? auth()->id() : null; // Si no existe en la tabla relacional, se pone null
+        $cita->reprogramada_en         = now();
+        $cita->fecha_hora_inicio       = $inicio;
+        $cita->fecha_hora_fin_estimada = $fin;
+        $cita->estado                  = 'confirmada';
+        $cita->save();
+
+        return back()->with('status', 'Cita reprogramada correctamente.');
+    }
+
+    public function solicitudes()
+    {
+        $solicitudes = Cita::where('estado', 'en_revision')
+            ->with(['mascota', 'servicio', 'groomer', 'creadoPor'])
+            ->orderBy('creado_en', 'asc')
+            ->get();
+
+        return view('recepcion.solicitudes', compact('solicitudes'));
+    }
 }
