@@ -28,7 +28,13 @@ class PagoController extends Controller
             return back()->withErrors(['error' => 'Esta cita ya tiene un pago registrado.']);
         }
 
-        return view('recepcion.pagos.create', compact('cita'));
+        $promociones = \App\Models\Promocion::where('activo', true)
+            ->where(function($q) use ($cita) {
+                $q->whereNull('servicio_id')
+                ->orWhere('servicio_id', $cita->servicio_id);
+            })->get();
+
+        return view('recepcion.pagos.create', compact('cita', 'promociones'));
     }
 
     public function store(Request $request, $citaId)
@@ -79,4 +85,41 @@ class PagoController extends Controller
 
         return back()->with('status', 'Pago anulado correctamente.');
     }
+    public function calcularPromocion(Request $request)
+{
+    $request->validate([
+        'promocion_id' => 'required|exists:promociones,id',
+        'monto'        => 'required|numeric|min:0',
+        'cita_id'      => 'nullable|exists:citas,id',
+    ]);
+
+    $promo = \App\Models\Promocion::findOrFail($request->promocion_id);
+
+    if (!$promo->estaVigente()) {
+        return response()->json(['error' => 'La promoción no está vigente.'], 422);
+    }
+
+    // Validar cliente frecuente
+    if ($promo->tipo === 'cliente_frecuente' && $request->cita_id) {
+        $cita = \App\Models\Cita::with('mascota')->find($request->cita_id);
+        if ($cita) {
+            $totalCitas = \App\Models\Cita::where('creado_por_usuario_id', $cita->creado_por_usuario_id)
+                ->where('estado', 'completada')->count();
+            if ($totalCitas < $promo->min_citas) {
+                return response()->json([
+                    'error' => "El cliente necesita {$promo->min_citas} citas completadas. Tiene {$totalCitas}."
+                ], 422);
+            }
+        }
+    }
+
+    $descuento = $promo->calcularDescuento($request->monto);
+    $total     = max(0, $request->monto - $descuento);
+
+    return response()->json([
+        'descuento' => $descuento,
+        'total'     => $total,
+        'label'     => $promo->tipo_label,
+    ]);
+}
 }

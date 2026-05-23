@@ -8,7 +8,7 @@
 ---
 
 ## 📋 Descripción del Proyecto
-Sistema web para la gestión integral de un Spa de Mascotas, desarrollado con Laravel 13 y MySQL. Permite gestionar citas, mascotas, servicios, grooming, inventario y notificaciones.
+Sistema web para la gestión integral de un Spa de Mascotas, desarrollado con Laravel 13 y MySQL. Permite gestionar citas, mascotas, servicios, grooming, inventario, pagos y notificaciones.
 
 ---
 
@@ -22,59 +22,83 @@ Sistema web para la gestión integral de un Spa de Mascotas, desarrollado con La
 - [x] Sesión automática de 30 minutos
 - [x] Recuperar y cambiar contraseña
 - [x] Control de acceso por roles (RBAC)
-- [x] Panel de auditoría y logs
+- [x] Panel de auditoría y logs completo
 
 ### 👥 Módulo de Roles
-- [x] Administrador
-- [x] Recepción
-- [x] Groomer
-- [x] Cliente (Dueño de mascota)
+- [x] Administrador — acceso total
+- [x] Recepción — gestión de citas, clientes y pagos
+- [x] Groomer — agenda, fichas y checklist
+- [x] Cliente — mascotas, citas e historial
 
 ### 🐾 Módulo de Mascotas
-- [x] Registro de mascotas (especie, raza, peso, temperamento)
+- [x] Registro completo (especie, raza, peso, temperamento, alergias)
 - [x] Editar y eliminar mascotas
 - [x] Alertas de alergias y restricciones médicas
+- [x] Carnet de vacunas con archivo adjunto (PDF/imagen)
+- [x] Múltiples mascotas por cliente
 
-### 📅 Módulo de Citas
-- [x] Solicitar citas (cliente)
+### 📅 Módulo de Agenda y Citas
+- [x] Solicitar citas con selección de mascota, servicio, groomer y horario
+- [x] Estado inicial "En revisión"
 - [x] Validación de solapamiento de horarios
+- [x] Validación de capacidad simultánea por groomer
+- [x] Ajuste automático de duración por tamaño de mascota
+- [x] Ajuste por temperamento nervioso/agresivo (+20%)
 - [x] Confirmar, iniciar, completar y cancelar citas (recepción)
-- [x] Cancelar citas con motivo (groomer)
+- [x] Reprogramar citas con validación
+- [x] Bandeja de solicitudes pendientes
+- [x] Cancelar citas con motivo y política de cancelación (cliente)
+- [x] Historial de servicios del cliente
+
+### 📅 Módulo de Horarios y Bloqueos
+- [x] Configuración de horarios de trabajo por groomer
+- [x] Bloqueos de agenda (feriados, vacaciones, mantenimiento, ausencias)
+- [x] Bloqueos globales y por groomer específico
+- [x] Calendario maestro semanal para recepción
 
 ### ✂️ Módulo de Grooming
-- [x] Agenda del groomer
-- [x] Ficha técnica de grooming
-- [x] Checklist interactivo del servicio
-- [x] Fotos antes/después
-- [x] Cierre de ficha y notificación al cliente
+- [x] Agenda personal del groomer
+- [x] Ficha técnica de atención (estado inicial y final)
+- [x] Checklist interactivo obligatorio antes de cerrar
+- [x] Fotos antes/después desde dispositivo móvil
+- [x] Registro de insumos usados
+- [x] Cierre de ficha y notificación automática al cliente
 
 ### 📦 Módulo de Inventario y Tienda
 - [x] Gestión de productos y categorías
 - [x] Control de stock con alertas de bajo inventario
-- [x] Tienda virtual con pedidos por WhatsApp
-
-### 🔔 Módulo de Notificaciones
-- [x] Email de confirmación de cita
-- [x] Email de mascota lista para recoger
-- [x] Notificación al groomer cuando le asignan una cita
-
-### 📊 Módulo de Reportes
-- [x] Dashboard ejecutivo con KPIs
-- [x] Citas por estado, groomer y servicio
-- [x] Ingresos del mes
-- [x] Top servicios
+- [x] Tienda virtual con búsqueda y filtros
+- [x] Pedidos por WhatsApp con número del spa
 
 ### ✂️ Módulo de Servicios
-- [x] Gestión de servicios y precios
+- [x] Gestión de servicios y precios base
 - [x] Precios automáticos por tamaño de mascota
+- [x] Duración configurable por servicio
 
-### 📅 Módulo de Agenda y Horarios
-- [x] Agenda del groomer con citas del día
-- [x] Próximas citas
-- [x] Validación de solapamiento de horarios
-- [x] Bloqueo de agenda (feriados, mantenimiento, vacaciones, ausencias)
-- [x] Configuración de horarios de trabajo por groomer
-- [x] Bloqueos globales y por groomer específico
+### 🔔 Módulo de Notificaciones
+- [x] Email de confirmación de cita al cliente
+- [x] Email al groomer cuando le asignan una cita
+- [x] Email a recepción cuando llega una solicitud
+- [x] Email de "mascota lista para recoger" al cerrar ficha
+- [x] Recordatorio automático 24h antes de la cita
+- [x] Panel de historial de notificaciones
+
+### 💰 Módulo de Pagos y Facturación
+- [x] Registro de pagos (efectivo, QR, transferencia)
+- [x] Generación de facturas
+- [x] Anulación de pagos
+- [x] Historial de pagos
+
+### 📊 Módulo de Reportes
+- [x] Dashboard ejecutivo con KPIs en tiempo real
+- [x] Citas por estado, groomer y servicio
+- [x] Ingresos del mes
+- [x] Top servicios más solicitados
+- [x] Productos con bajo stock
+
+### 👥 Módulo de Clientes (Recepción)
+- [x] Lista completa de clientes con búsqueda
+- [x] Detalle de cliente con mascotas e historial de citas
 
 ---
 

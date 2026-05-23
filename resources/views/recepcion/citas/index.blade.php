@@ -21,6 +21,7 @@
             'en_progreso' => ['label'=>'🔄 En progreso','color'=>'#1565c0'],
             'completada'  => ['label'=>'🎉 Completadas','color'=>'#6a1b9a'],
             'cancelada'   => ['label'=>'❌ Canceladas', 'color'=>'#c62828'],
+            'en_revision' => ['label'=>'🔍 En revisión', 'color'=>'#6a1b9a'],
         ];
         $filtro = request('estado', 'todas');
     @endphp
@@ -87,9 +88,18 @@
                         {{ $c['label'] }}
                     </span>
                 </td>
+                
                 <td style="padding:14px 16px;">
                     <div style="display:flex; gap:6px; flex-wrap:wrap;">
                         @if($cita->estado === 'agendada')
+                        <form method="POST" action="{{ route('recepcion.citas.confirmar', $cita->id) }}">
+                            @csrf
+                            <button type="submit" style="background:#e8f5e9; color:#2e7d32; border:none; padding:6px 10px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; font-family:Poppins,sans-serif;">
+                                ✅ Confirmar
+                            </button>
+                        </form>
+                        @endif
+                        @if($cita->estado === 'en_revision')
                         <form method="POST" action="{{ route('recepcion.citas.confirmar', $cita->id) }}">
                             @csrf
                             <button type="submit" style="background:#e8f5e9; color:#2e7d32; border:none; padding:6px 10px; border-radius:6px; font-size:11px; font-weight:600; cursor:pointer; font-family:Poppins,sans-serif;">

@@ -124,6 +124,28 @@
                 placeholder="Notas adicionales sobre el pago..."
                 style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; font-family:Poppins,sans-serif; outline:none; resize:vertical; box-sizing:border-box;"></textarea>
         </div>
+        {{-- Sección promoción --}}
+<div style="margin-bottom:16px;">
+    <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:8px;">
+        🏷️ Aplicar promoción <span style="color:#a1887f; font-weight:400;">(opcional)</span>
+    </label>
+    <select id="select-promo" name="promocion_id"
+        onchange="aplicarPromocion(this.value)"
+        style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; font-family:Poppins,sans-serif; outline:none; background:white; box-sizing:border-box;">
+        <option value="">— Sin promoción —</option>
+        @foreach($promociones as $promo)
+            <option value="{{ $promo->id }}"
+                data-valor="{{ $promo->calcularDescuento($cita->precio_acordado) }}">
+                {{ $promo->nombre }} — {{ $promo->tipo_label }}
+                @if($promo->servicio && $promo->servicio_id != $cita->servicio_id)
+                    (no aplica a este servicio)
+                @endif
+            </option>
+        @endforeach
+    </select>
+    <div id="promo-msg" style="display:none; margin-top:6px; padding:8px 12px; border-radius:8px; font-size:12px;"></div>
+</div>
+
 
         <div style="display:flex; gap:10px;">
             <a href="{{ route('recepcion.citas.index') }}"

@@ -483,6 +483,9 @@
             <a href="{{ route('recepcion.solicitudes.index') }}" class="sb-link {{ request()->routeIs('recepcion.solicitudes.*') ? 'active' : '' }}">
                 <span class="sb-icon">🔍</span> Solicitudes
             </a>
+            <a href="{{ route('admin.promociones.index') }}" class="sb-link {{ request()->routeIs('admin.promociones.*') ? 'active' : '' }}">
+                <span class="sb-icon">🏷️</span> Promociones
+            </a>
 
             <p class="sb-section">Inventario</p>
             <a href="{{ route('admin.productos.index') }}" class="sb-link {{ request()->routeIs('admin.productos.*') ? 'active' : '' }}">

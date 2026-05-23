@@ -33,6 +33,8 @@ use App\Http\Controllers\Recepcion\ClienteController as RecepcionClienteControll
 
 use Illuminate\Support\Facades\Schedule;
 
+use App\Http\Controllers\Admin\PromocionController;
+
 Schedule::command('recordatorios:enviar')->hourly();
 /*
 |--------------------------------------------------------------------------
@@ -145,6 +147,9 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
         // Calendario de Flujo
         Route::get('/calendario', [CalendarioController::class, 'index'])->name('calendario');
 
+        //mmmm
+        Route::post('/pagos/promo-calcular', [PagoController::class, 'calcularPromocion'])->name('pagos.promo.calcular');
+
         // Módulo de Pagos
         Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
         Route::get('/pagos/cita/{citaId}', [PagoController::class, 'create'])->name('pagos.create');
@@ -162,6 +167,10 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
     // GRUPO: ADMINISTRACIÓN (ADMIN)
     // --------------------------------------------------------------------
     Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('/promociones', [PromocionController::class, 'index'])->name('promociones.index');
+        Route::post('/promociones', [PromocionController::class, 'store'])->name('promociones.store');
+        Route::patch('/promociones/{id}/toggle', [PromocionController::class, 'toggle'])->name('promociones.toggle');
+        Route::delete('/promociones/{id}', [PromocionController::class, 'destroy'])->name('promociones.destroy');
         // CRUDs Estándar
         Route::resource('servicios', ServicioController::class);
         Route::resource('productos', ProductoController::class);
