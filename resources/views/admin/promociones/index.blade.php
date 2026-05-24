@@ -138,7 +138,8 @@
 
                 <div style="display:flex; gap:8px;">
                     <form method="POST" action="{{ route('admin.promociones.toggle', $promo->id) }}">
-                        @csrf @method('PATCH')
+                        @csrf
+                        @method('PATCH')
                         <button type="submit" class="btn btn-secondary" style="font-size:12px; padding:5px 12px;">
                             {{ $vigente ? '⏸ Desactivar' : '▶ Activar' }}
                         </button>

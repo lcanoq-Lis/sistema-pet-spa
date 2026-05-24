@@ -49,7 +49,7 @@ class PromocionController extends Controller
     public function toggle($id)
     {
         $promo = Promocion::findOrFail($id);
-        $promo->activo = !$promo->activo;
+        $promo->activo = $promo->activo ? 0 : 1;
         $promo->save();
         return back()->with('status', 'Estado de la promoción actualizado.');
     }
