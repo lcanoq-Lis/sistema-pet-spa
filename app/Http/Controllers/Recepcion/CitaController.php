@@ -126,7 +126,38 @@ class CitaController extends Controller
         $cita->estado                  = 'confirmada';
         $cita->save();
 
-        return back()->with('status', 'Cita reprogramada correctamente.');
+        // Enviar notificación al cliente y al groomer
+        try {
+            $cita = $cita->fresh(['mascota', 'servicio', 'groomer.usuario']);
+            
+            // Notificar al cliente
+            $cliente = \App\Models\User::find($cita->creado_por_usuario_id);
+            if ($cliente) {
+                \Illuminate\Support\Facades\Mail::send('emails.reprogramacion_cita', [
+                    'cita'    => $cita,
+                    'usuario' => $cliente,
+                ], function($m) use ($cliente) {
+                    $m->to($cliente->email)
+                    ->subject('📅 Tu cita ha sido reprogramada — Pet Spa');
+                });
+            }
+
+            // Notificar al groomer
+            $emailGroomer = $cita->groomer?->usuario?->email;
+            if ($emailGroomer) {
+                \Illuminate\Support\Facades\Mail::send('emails.reprogramacion_cita', [
+                    'cita'    => $cita,
+                    'usuario' => $cita->groomer->usuario,
+                ], function($m) use ($emailGroomer) {
+                    $m->to($emailGroomer)
+                    ->subject('📅 Cita reprogramada asignada — Pet Spa');
+                });
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error notificación reprogramación: ' . $e->getMessage());
+        }
+
+        return back()->with('status', 'Cita reprogramada correctamente. Se enviaron notificaciones.');
     }
 
     public function solicitudes()

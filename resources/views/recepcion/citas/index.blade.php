@@ -197,6 +197,11 @@
     <div style="background:white; border-radius:20px; padding:32px; max-width:400px; width:90%; text-align:center;">
         <div style="font-size:48px; margin-bottom:16px;">📅</div>
         <h3 style="font-size:18px; font-weight:700; color:#5d4037; margin-bottom:16px;">Reprogramar cita</h3>
+        @if($errors->has('hora'))
+<div style="background:#ffebee; color:#c62828; border-left:4px solid #e53935; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:14px;">
+    ⚠️ {{ $errors->first('hora') }}
+</div>
+@endif
         <form id="form-reprogramar" method="POST">
             @csrf
             <div style="margin-bottom:12px; text-align:left;">
@@ -252,5 +257,10 @@ function cerrarModalReprogramar() {
     document.getElementById('modal-reprogramar').style.display = 'none';
 }
 </script>
-
+// Reabrir modal si hay errores de validación
+@if($errors->has('hora'))
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('modal-reprogramar').style.display = 'flex';
+    });
+@endif
 @endsection

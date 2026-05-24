@@ -143,4 +143,23 @@ public static function enviarNotificacionRecepcion(Cita $cita)
         }
     }
 }
+public function enviarNotificacionFichaCerrada($ficha)
+{
+    $ficha->load(['cita.mascota', 'cita.servicio', 'cita.groomer']);
+    
+    // Buscar al dueño de la mascota
+    $cita    = $ficha->cita;
+    $cliente = \App\Models\User::find($cita->creado_por_usuario_id);
+
+    if (!$cliente) return;
+
+    \Illuminate\Support\Facades\Mail::send(
+        'emails.ficha_cerrada',
+        ['ficha' => $ficha, 'cita' => $cita, 'cliente' => $cliente],
+        function($m) use ($cliente) {
+            $m->to($cliente->email)
+              ->subject('🎉 Tu mascota está lista — Pet Spa');
+        }
+    );
+}
 }

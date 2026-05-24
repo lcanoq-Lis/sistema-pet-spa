@@ -35,6 +35,7 @@ use Illuminate\Support\Facades\Schedule;
 
 use App\Http\Controllers\Admin\PromocionController;
 
+Schedule::command('citas:recordatorios')->dailyAt('08:00');
 Schedule::command('recordatorios:enviar')->hourly();
 /*
 |--------------------------------------------------------------------------
