@@ -135,34 +135,39 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
     });
 
     // --------------------------------------------------------------------
-    // GRUPO: RECEPCIÓN
-    // --------------------------------------------------------------------
-    Route::prefix('recepcion')->name('recepcion.')->group(function () {
-        // Citas
-        Route::get('/citas', [RecepcionCitaController::class, 'index'])->name('citas.index');
-        Route::post('/citas/{id}/confirmar', [RecepcionCitaController::class, 'confirmar'])->name('citas.confirmar');
-        Route::post('/citas/{id}/iniciar', [RecepcionCitaController::class, 'iniciar'])->name('citas.iniciar');
-        Route::post('/citas/{id}/completar', [RecepcionCitaController::class, 'completar'])->name('citas.completar');
-        Route::post('/citas/{id}/cancelar', [RecepcionCitaController::class, 'cancelar'])->name('citas.cancelar');
+// GRUPO: RECEPCIÓN
+// --------------------------------------------------------------------
+Route::prefix('recepcion')->name('recepcion.')->group(function () {
 
-        // Calendario de Flujo
-        Route::get('/calendario', [CalendarioController::class, 'index'])->name('calendario');
+    // Citas
+    Route::get('/citas', [RecepcionCitaController::class, 'index'])->name('citas.index');
+    Route::post('/citas/{id}/confirmar', [RecepcionCitaController::class, 'confirmar'])->name('citas.confirmar');
+    Route::post('/citas/{id}/iniciar', [RecepcionCitaController::class, 'iniciar'])->name('citas.iniciar');
+    Route::post('/citas/{id}/completar', [RecepcionCitaController::class, 'completar'])->name('citas.completar');
+    Route::post('/citas/{id}/cancelar', [RecepcionCitaController::class, 'cancelar'])->name('citas.cancelar');
+    Route::post('/citas/{id}/reprogramar', [RecepcionCitaController::class, 'reprogramar'])->name('citas.reprogramar');
+    Route::get('/solicitudes', [RecepcionCitaController::class, 'solicitudes'])->name('solicitudes.index');
 
-        //mmmm
-        Route::post('/pagos/promo-calcular', [PagoController::class, 'calcularPromocion'])->name('pagos.promo.calcular');
+    // Calendario
+    Route::get('/calendario', [CalendarioController::class, 'index'])->name('calendario');
 
-        // Módulo de Pagos
-        Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
-        Route::get('/pagos/cita/{citaId}', [PagoController::class, 'create'])->name('pagos.create');
-        Route::post('/pagos/cita/{citaId}', [PagoController::class, 'store'])->name('pagos.store');
-        Route::get('/pagos/{pagoId}/factura', [PagoController::class, 'factura'])->name('pagos.factura');
-        Route::patch('/pagos/{pagoId}/anular', [PagoController::class, 'anular'])->name('pagos.anular');
-    
-        Route::get('/clientes', [RecepcionClienteController::class, 'index'])->name('clientes.index');
-        Route::get('/clientes/{id}', [RecepcionClienteController::class, 'show'])->name('clientes.show');
-        Route::post('/citas/{id}/reprogramar', [RecepcionCitaController::class, 'reprogramar'])->name('citas.reprogramar');
-        Route::get('/solicitudes', [RecepcionCitaController::class, 'solicitudes'])->name('solicitudes.index');
-    });
+    // Pagos
+    Route::post('/pagos/promo-calcular', [PagoController::class, 'calcularPromocion'])->name('pagos.promo.calcular');
+    Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
+    Route::get('/pagos/cita/{citaId}', [PagoController::class, 'create'])->name('pagos.create');
+    Route::post('/pagos/cita/{citaId}', [PagoController::class, 'store'])->name('pagos.store');
+    Route::get('/pagos/{pagoId}/factura', [PagoController::class, 'factura'])->name('pagos.factura');
+    Route::patch('/pagos/{pagoId}/anular', [PagoController::class, 'anular'])->name('pagos.anular');
+
+    // Clientes
+    Route::get('/clientes', [RecepcionClienteController::class, 'index'])->name('clientes.index');
+    Route::get('/clientes/crear', [RecepcionClienteController::class, 'create'])->name('clientes.create');
+    Route::post('/clientes', [RecepcionClienteController::class, 'store'])->name('clientes.store');
+    Route::get('/clientes/{id}/mascota/crear', [RecepcionClienteController::class, 'createMascota'])->name('clientes.mascota.create');
+    Route::post('/clientes/{id}/mascota', [RecepcionClienteController::class, 'storeMascota'])->name('clientes.mascota.store');
+    Route::get('/clientes/{id}', [RecepcionClienteController::class, 'show'])->name('clientes.show');
+
+});
 
     // --------------------------------------------------------------------
     // GRUPO: ADMINISTRACIÓN (ADMIN)

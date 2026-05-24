@@ -79,32 +79,74 @@ class FichaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $ficha = FichaGrooming::findOrFail($id);
+         $ficha = FichaGrooming::with('checklist')->findOrFail($id);
 
-        $ficha->estado_final   = $request->estado_final;
-        $ficha->notas_internas = $request->notas_internas;
-        $ficha->save();
+    // Advertir si el checklist no está completo
+    $checklistData = $request->input('checklist', []);
+    $sinCompletar = $ficha->checklist->filter(function($check) use ($checklistData) {
+        return !isset($checklistData[$check->item_id]['completado']);
+    })->count();
 
-        // BLINDAJE: Si el usuario desmarca todas las casillas, se asume un array vacío para evitar errores de PHP
-        $checklistData = $request->input('checklist', []);
+    // Guardar igual pero mostrar advertencia
+    $ficha->estado_final   = $request->estado_final;
+    $ficha->notas_internas = $request->notas_internas;
+    $ficha->save();
 
-        foreach ($checklistData as $itemId => $data) {
-            FichaChecklist::where('ficha_id', $id)
-                ->where('item_id', $itemId)
-                ->update([
-                    'completado'  => isset($data['completado']),
-                    'observacion' => $data['observacion'] ?? null,
-                ]);
-        }
-
-        return redirect()->route('groomer.agenda.index')->with('status', 'Ficha actualizada correctamente.');
+    foreach ($checklistData as $itemId => $data) {
+        FichaChecklist::where('ficha_id', $id)
+            ->where('item_id', $itemId)
+            ->update([
+                'completado'  => isset($data['completado']),
+                'observacion' => $data['observacion'] ?? null,
+            ]);
     }
 
-    /**
-     * MEJORADO: Inyección automática de NotificacionController para evitar el "new".
-     */
-    public function cerrar($id, NotificacionController $notificacionService)
-    {
+    $mensaje = 'Ficha actualizada correctamente.';
+    if ($sinCompletar > 0) {
+        $mensaje = "⚠️ Ficha guardada pero tienes {$sinCompletar} ítem(s) del checklist sin completar. No podrás cerrar la ficha hasta completarlos.";
+    }
+
+    return redirect()->route('groomer.ficha.edit', $id)->with('status', $mensaje);
+
+    
+            $ficha = FichaGrooming::findOrFail($id);
+
+            $ficha->estado_final   = $request->estado_final;
+            $ficha->notas_internas = $request->notas_internas;
+            $ficha->save();
+
+            // BLINDAJE: Si el usuario desmarca todas las casillas, se asume un array vacío para evitar errores de PHP
+            $checklistData = $request->input('checklist', []);
+
+            foreach ($checklistData as $itemId => $data) {
+                FichaChecklist::where('ficha_id', $id)
+                    ->where('item_id', $itemId)
+                    ->update([
+                        'completado'  => isset($data['completado']),
+                        'observacion' => $data['observacion'] ?? null,
+                    ]);
+            }
+
+            return redirect()->route('groomer.ficha.edit', $id)->with('status', 'Ficha actualizada correctamente.');
+        }
+
+        /**
+         * MEJORADO: Inyección automática de NotificacionController para evitar el "new".
+         */
+        public function cerrar($id, NotificacionController $notificacionService)
+        {
+            $ficha = FichaGrooming::with('checklist')->findOrFail($id);
+
+        // Verificar que todos los ítems del checklist estén completados
+        $sinCompletar = $ficha->checklist->where('completado', false)->count();
+        if ($sinCompletar > 0) {
+            return back()->withErrors([
+                'checklist' => "No puedes cerrar la ficha. Tienes {$sinCompletar} ítem(s) del checklist sin completar."
+            ]);
+        }
+
+        $ficha->fecha_cierre = now();
+
         $ficha = FichaGrooming::findOrFail($id);
         $ficha->fecha_cierre = now();
         $ficha->save();
@@ -199,4 +241,5 @@ class FichaController extends Controller
 
         return back()->with('status', 'Insumo eliminado y stock devuelto.');
     }
+    
 }

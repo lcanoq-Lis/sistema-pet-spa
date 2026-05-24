@@ -28,7 +28,7 @@
         </button>
 
         @if(request('buscar') || request('categoria'))
-        <a href="{{ route('tienda.index') }}"
+        <a href="{{ route('cliente.tienda.index') }}"
             style="background:#f5f0eb; color:#8d6e63; font-weight:600; padding:8px 16px; border-radius:10px; text-decoration:none; font-size:14px;">
             Limpiar
         </a>

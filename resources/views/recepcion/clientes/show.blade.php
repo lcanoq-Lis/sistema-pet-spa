@@ -37,6 +37,9 @@
     {{-- Mascotas --}}
     <div class="stat-card">
         <h3 style="font-size:16px; font-weight:700; color:#5d4037; margin-bottom:16px;">🐾 Mascotas</h3>
+        <a href="{{ route('recepcion.clientes.mascota.create', $cliente->id) }}" class="btn btn-primary" style="font-size:12px; padding:6px 14px; margin-bottom:12px; display:inline-block;">
+    🐾 Agregar mascota
+</a>
         @forelse($cliente->mascotas as $mascota)
         <div style="background:#f5f0eb; border-radius:10px; padding:12px; margin-bottom:8px;">
             <div style="display:flex; justify-content:space-between; align-items:center;">

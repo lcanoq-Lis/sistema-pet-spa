@@ -436,6 +436,12 @@
     @endif
 @endif
 
+@if($errors->has('checklist'))
+<div style="background:#ffebee; color:#c62828; border-left:4px solid #e53935; padding:10px 14px; border-radius:8px; font-size:13px; margin-bottom:12px;">
+    ⚠️ {{ $errors->first('checklist') }}
+</div>
+@endif
+
     {{-- Botón final para Cerrar ficha --}}
     @if(!$ficha->fecha_cierre)
     <form method="POST" action="{{ route('groomer.ficha.cerrar', $ficha->id) }}">

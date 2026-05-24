@@ -92,7 +92,18 @@ class CitaController extends Controller
         if ($fin->lessThanOrEqualTo($inicio)) {
             return back()->withErrors(['hora' => 'Error crítico: La hora de finalización estimada no puede ser menor o igual al inicio.'])->withInput();
         }
+// 3.5 Verificar horario laboral y bloqueos
+$disponibilidad = \App\Http\Controllers\Admin\HorarioController::verificarDisponibilidad(
+    $inicio->toDateString(),
+    $inicio->format('H:i'),
+    $cita->groomer_id
+);
 
+if (!$disponibilidad['disponible']) {
+    return back()->withErrors([
+        'hora' => $disponibilidad['motivo']
+    ])->withInput();
+}
         // 4. Verificar solapamiento y capacidad simultánea
         $citasEnHorario = Cita::where('groomer_id', $cita->groomer_id)
             ->where('id', '!=', $id)

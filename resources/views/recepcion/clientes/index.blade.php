@@ -4,12 +4,17 @@
 @section('page-subtitle', 'Lista de clientes registrados')
 
 @section('content')
-
+<div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+    <a href="{{ route('recepcion.clientes.create') }}" class="btn btn-primary">
+        👤 Nuevo cliente
+    </a>
+</div>
 <div style="margin-bottom:24px;">
     <input type="text" id="buscar" placeholder="🔍 Buscar cliente..."
         onkeyup="filtrarClientes()"
         style="border:2px solid #d7ccc8; border-radius:10px; padding:10px 16px; font-size:14px; outline:none; font-family:Poppins,sans-serif; width:300px;">
 </div>
+
 
 <div class="stat-card" style="padding:0; overflow:hidden;">
     <table style="width:100%; border-collapse:collapse;" id="tabla-clientes">
