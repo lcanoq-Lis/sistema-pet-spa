@@ -10,7 +10,14 @@
     </div>
     <div style="padding:24px;">
         <p style="font-size:14px; color:#5d4037;">Hola <strong>{{ $cliente->name }}</strong>,</p>
-        <p style="font-size:14px; color:#5d4037;">Te recordamos que mañana tienes una cita en Pet Spa:</p>
+        <p style="font-size:14px; color:#5d4037;">
+    Te recordamos que 
+    @if(isset($horas) && $horas == 2)
+        <strong>en 2 horas</strong> tienes una cita en Pet Spa:
+    @else
+        <strong>mañana</strong> tienes una cita en Pet Spa:
+    @endif
+</p>
         <div style="background:#f5f0eb; border-radius:10px; padding:16px; margin:16px 0;">
             <p style="margin:4px 0; font-size:13px; color:#5d4037;">🐾 <strong>Mascota:</strong> {{ $cita->mascota->nombre }}</p>
             <p style="margin:4px 0; font-size:13px; color:#5d4037;">✂️ <strong>Servicio:</strong> {{ $cita->servicio->nombre }}</p>

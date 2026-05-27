@@ -97,7 +97,7 @@ class HorarioController extends Controller
             return ['disponible' => false, 'motivo' => "El spa no atiende los {$dias[$diaSemana]}."];
         }
 
-        if ($hora < $horario->hora_apertura || $hora >= $horario->hora_cierre) {
+        if ($hora < substr($horario->hora_apertura, 0, 5) || $hora >= substr($horario->hora_cierre, 0, 5)) {
             return [
                 'disponible' => false,
                 'motivo'     => "El horario de atención es de {$horario->hora_apertura} a {$horario->hora_cierre}.",

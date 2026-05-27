@@ -35,6 +35,8 @@ use Illuminate\Support\Facades\Schedule;
 
 use App\Http\Controllers\Admin\PromocionController;
 
+use App\Http\Controllers\Cliente\PerfilController;
+
 Schedule::command('citas:recordatorios')->dailyAt('08:00');
 Schedule::command('recordatorios:enviar')->hourly();
 /*
@@ -103,6 +105,10 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
         
         // Tienda dentro del contexto del cliente
         Route::get('/tienda', [TiendaController::class, 'index'])->name('tienda.index');
+
+        Route::get('/perfil', [PerfilController::class, 'edit'])->name('perfil.edit');
+        Route::put('/perfil', [PerfilController::class, 'update'])->name('perfil.update');
+        Route::post('/perfil/password', [PerfilController::class, 'cambiarPassword'])->name('perfil.password');
     });
 
     // --------------------------------------------------------------------
@@ -156,6 +162,7 @@ Route::prefix('recepcion')->name('recepcion.')->group(function () {
     Route::get('/pagos', [PagoController::class, 'index'])->name('pagos.index');
     Route::get('/pagos/cita/{citaId}', [PagoController::class, 'create'])->name('pagos.create');
     Route::post('/pagos/cita/{citaId}', [PagoController::class, 'store'])->name('pagos.store');
+    Route::get('/pagos/cierre', [PagoController::class, 'cierreCaja'])->name('pagos.cierre');
     Route::get('/pagos/{pagoId}/factura', [PagoController::class, 'factura'])->name('pagos.factura');
     Route::patch('/pagos/{pagoId}/anular', [PagoController::class, 'anular'])->name('pagos.anular');
 

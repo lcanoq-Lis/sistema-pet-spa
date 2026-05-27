@@ -168,6 +168,9 @@
         <p style="font-weight:700; color:#5d4037; margin-top:8px;">Calendario</p>
         <p style="font-size:12px; color:#a1887f;">Vista semanal</p>
     </a>
+    <a href="{{ route('recepcion.pagos.cierre') }}" class="sb-link">
+    <span class="sb-icon">🏦</span> Cierre de caja
+</a>
 </div>
 
 {{-- ========== VISTA GROOMER ========== --}}

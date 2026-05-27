@@ -122,4 +122,23 @@ class PagoController extends Controller
         'label'     => $promo->tipo_label,
     ]);
 }
+public function cierreCaja(Request $request)
+{
+    $fecha = $request->get('fecha', now()->toDateString());
+
+    $pagos = \App\Models\Pago::with(['cita.mascota', 'cita.servicio', 'registradoPor'])
+        ->whereDate('creado_en', $fecha)
+        ->where('estado', 'pagado')
+        ->get();
+
+    $totales = [
+        'efectivo'      => $pagos->where('metodo', 'efectivo')->sum('total'),
+        'qr'            => $pagos->where('metodo', 'qr')->sum('total'),
+        'transferencia' => $pagos->where('metodo', 'transferencia')->sum('total'),
+        'total'         => $pagos->sum('total'),
+        'count'         => $pagos->count(),
+    ];
+
+    return view('recepcion.pagos.cierre_caja', compact('pagos', 'totales', 'fecha'));
+}
 }

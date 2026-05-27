@@ -521,6 +521,10 @@
             <a href="{{ route('recepcion.clientes.index') }}" class="sb-link {{ request()->routeIs('recepcion.clientes.*') ? 'active' : '' }}">
                 <span class="sb-icon">🐶</span> Clientes
             </a>
+            4. Agrega el link en el sidebar dentro de la sección de recepción:
+            <a href="{{ route('recepcion.pagos.cierre') }}" class="sb-link">
+                    <span class="sb-icon">🏦</span> Cierre de caja
+                </a>
         @endif
 
         @if(Auth::user()->rol?->nombre === 'groomer')
@@ -543,6 +547,9 @@
             </a>
             <a href="{{ route('cliente.tienda.index') }}" class="sb-link {{ request()->routeIs('cliente.tienda.*') ? 'active' : '' }}">
                 <span class="sb-icon">🛍️</span> Tienda
+            </a>
+            <a href="{{ route('cliente.perfil.edit') }}" class="sb-link {{ request()->routeIs('cliente.perfil.*') ? 'active' : '' }}">
+                <span class="sb-icon">👤</span> Mi Perfil
             </a>
         @endif
 
