@@ -212,19 +212,21 @@ class FichaController extends Controller
         ]);
 
         $producto = \App\Models\Producto::findOrFail($request->producto_id);
-        
-        // Descontar inventario/stock
-        $producto->stock = max(0, $producto->stock - $request->cantidad);
-        $producto->save();
+
+        // Solo descontar stock si fue usado o desperdiciado
+        if ($request->estado !== 'devuelto') {
+            $producto->stock = max(0, $producto->stock - $request->cantidad);
+            $producto->save();
+        }
 
         \App\Models\InsumoGrooming::create([
             'ficha_id'    => $fichaId,
             'producto_id' => $request->producto_id,
             'cantidad'    => $request->cantidad,
             'unidad'      => $request->unidad,
+            'estado'      => $request->estado ?? 'usado',
             'observacion' => $request->observacion,
         ]);
-
         return back()->with('status', 'Insumo registrado y stock actualizado.');
     }
 

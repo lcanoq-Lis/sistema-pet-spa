@@ -334,49 +334,57 @@
                 @csrf
                 <p style="font-size:13px; font-weight:700; color:#5d4037; margin-bottom:14px;">➕ Agregar insumo</p>
 
-                <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:12px; margin-bottom:12px;">
-                    <div>
-                        <label style="display:block; font-size:11px; font-weight:700; color:#5d4037; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Producto *</label>
-                        <select name="producto_id" required
-                            style="width:100%; border:1.5px solid #d7ccc8; border-radius:10px; padding:9px 14px; font-size:13px; font-family:Poppins,sans-serif; outline:none; background:white; box-sizing:border-box;">
-                            <option value="">— Seleccionar producto —</option>
-                            @foreach($productos as $p)
-                                <option value="{{ $p->id }}" {{ $p->stock <= 0 ? 'disabled' : '' }}>
-                                    {{ $p->nombre }} (Stock: {{ $p->stock }}) {{ $p->stock <= $p->stock_minimo ? '⚠️' : '' }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:11px; font-weight:700; color:#5d4037; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Cantidad *</label>
-                        <input type="number" name="cantidad" min="0.1" step="0.1" value="1" required
-                            style="width:100%; border:1.5px solid #d7ccc8; border-radius:10px; padding:9px 14px; font-size:13px; font-family:Poppins,sans-serif; outline:none; box-sizing:border-box;">
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:11px; font-weight:700; color:#5d4037; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Unidad</label>
-                        <select name="unidad"
-                            style="width:100%; border:1.5px solid #d7ccc8; border-radius:10px; padding:9px 14px; font-size:13px; font-family:Poppins,sans-serif; outline:none; background:white; box-sizing:border-box;">
-                            <option value="unidad">Unidad</option>
-                            <option value="ml">ml</option>
-                            <option value="g">g</option>
-                            <option value="aplicacion">Aplicación</option>
-                            <option value="chorro">Chorro</option>
-                        </select>
-                    </div>
-                </div>
+             <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+    <div>
+        <label style="display:block; font-size:11px; font-weight:700; color:#5d4037; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Producto *</label>
+        <select name="producto_id" required
+            style="width:100%; border:1.5px solid #d7ccc8; border-radius:10px; padding:9px 14px; font-size:13px; font-family:Poppins,sans-serif; outline:none; background:white; box-sizing:border-box;">
+            <option value="">— Seleccionar producto —</option>
+            @foreach($productos as $p)
+                <option value="{{ $p->id }}" {{ $p->stock <= 0 ? 'disabled' : '' }}>
+                    {{ $p->nombre }} (Stock: {{ $p->stock }}) {{ $p->stock <= $p->stock_minimo ? '⚠️' : '' }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+    <div>
+        <label style="display:block; font-size:11px; font-weight:700; color:#5d4037; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Cantidad *</label>
+        <input type="number" name="cantidad" min="0.1" step="0.1" value="1" required
+            style="width:100%; border:1.5px solid #d7ccc8; border-radius:10px; padding:9px 14px; font-size:13px; font-family:Poppins,sans-serif; outline:none; box-sizing:border-box;">
+    </div>
+    <div>
+        <label style="display:block; font-size:11px; font-weight:700; color:#5d4037; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Unidad</label>
+        <select name="unidad"
+            style="width:100%; border:1.5px solid #d7ccc8; border-radius:10px; padding:9px 14px; font-size:13px; font-family:Poppins,sans-serif; outline:none; background:white; box-sizing:border-box;">
+            <option value="unidad">Unidad</option>
+            <option value="ml">ml</option>
+            <option value="g">g</option>
+            <option value="aplicacion">Aplicación</option>
+            <option value="chorro">Chorro</option>
+        </select>
+    </div>
+    <div>
+        <label style="display:block; font-size:11px; font-weight:700; color:#5d4037; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Estado</label>
+        <select name="estado"
+            style="width:100%; border:1.5px solid #d7ccc8; border-radius:10px; padding:9px 14px; font-size:13px; font-family:Poppins,sans-serif; outline:none; background:white; box-sizing:border-box;">
+            <option value="usado">✅ Usado</option>
+            <option value="devuelto">↩️ Devuelto</option>
+            <option value="desperdiciado">🗑️ Desperdiciado</option>
+        </select>
+    </div>
+</div>
 
-                <div style="margin-bottom:12px;">
-                    <label style="display:block; font-size:11px; font-weight:700; color:#5d4037; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Observación <span style="color:#a1887f; font-weight:400; text-transform:none;">(opcional)</span></label>
-                    <input type="text" name="observacion" maxlength="200"
-                        placeholder="Ej: se aplicó shampoo especial para piel sensible..."
-                        style="width:100%; border:1.5px solid #d7ccc8; border-radius:10px; padding:9px 14px; font-size:13px; font-family:Poppins,sans-serif; outline:none; box-sizing:border-box;">
-                </div>
+<div style="margin-bottom:12px;">
+    <label style="display:block; font-size:11px; font-weight:700; color:#5d4037; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Observación <span style="color:#a1887f; font-weight:400; text-transform:none;">(opcional)</span></label>
+    <input type="text" name="observacion" maxlength="200"
+        placeholder="Ej: se aplicó shampoo especial para piel sensible..."
+        style="width:100%; border:1.5px solid #d7ccc8; border-radius:10px; padding:9px 14px; font-size:13px; font-family:Poppins,sans-serif; outline:none; box-sizing:border-box;">
+</div>
 
-                <button type="submit"
-                    style="background:linear-gradient(135deg,#2e7d32,#43a047); color:white; font-weight:700; padding:9px 20px; border-radius:10px; border:none; cursor:pointer; font-size:13px; font-family:Poppins,sans-serif; box-shadow:0 2px 8px rgba(46,125,50,0.35);">
-                    ✅ Registrar insumo
-                </button>
-            </form>
+<button type="submit"
+    style="background:linear-gradient(135deg,#2e7d32,#43a047); color:white; font-weight:700; padding:9px 20px; border-radius:10px; border:none; cursor:pointer; font-size:13px; font-family:Poppins,sans-serif; box-shadow:0 2px 8px rgba(46,125,50,0.35);">
+    ✅ Registrar insumo
+</button>
 
             @if($ficha->insumos->count() > 0)
                 <div style="display:flex; flex-direction:column; gap:8px;">

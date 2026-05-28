@@ -117,7 +117,7 @@ NotificacionController::enviarNotificacionRecepcion($cita);
     ->with('status', '¡Cita solicitada correctamente! Está en revisión, la recepción la confirmará pronto. 📅');
 }
 
-   public function destroy(Request $request, $id)
+public function destroy(Request $request, $id)
 {
     $cliente = Cliente::where('usuario_id', Auth::id())->first();
     $cita    = Cita::whereHas('mascota', function ($q) use ($cliente) {
@@ -126,8 +126,16 @@ NotificacionController::enviarNotificacionRecepcion($cita);
         });
     })->findOrFail($id);
 
-    if (!in_array($cita->estado, ['agendada', 'confirmada'])) {
+    if (!in_array($cita->estado, ['agendada', 'confirmada', 'en_revision'])) {
         return back()->withErrors(['error' => 'No puedes cancelar esta cita.']);
+    }
+
+    // Validar política de cancelación — mínimo 24h de anticipación
+    $horasRestantes = now()->diffInHours($cita->fecha_hora_inicio, false);
+    if ($horasRestantes < 24) {
+        return back()->withErrors([
+            'error' => "No puedes cancelar con menos de 24 horas de anticipación. Tu cita es el {$cita->fecha_hora_inicio->format('d/m/Y')} a las {$cita->fecha_hora_inicio->format('H:i')}."
+        ]);
     }
 
     $cita->estado             = 'cancelada';

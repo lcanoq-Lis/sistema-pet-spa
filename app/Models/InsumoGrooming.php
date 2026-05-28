@@ -13,7 +13,7 @@ class InsumoGrooming extends Model
     protected $table = 'insumos_grooming';
 
     protected $fillable = [
-        'ficha_id', 'producto_id', 'cantidad', 'unidad', 'observacion'
+    'ficha_id', 'producto_id', 'cantidad', 'unidad', 'estado', 'observacion'
     ];
 
     protected $casts = [

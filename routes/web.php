@@ -39,6 +39,7 @@ use App\Http\Controllers\Cliente\PerfilController;
 
 Schedule::command('citas:recordatorios')->dailyAt('08:00');
 Schedule::command('recordatorios:enviar')->hourly();
+Schedule::command('groomers:alerta-consumo')->dailyAt('07:00');
 /*
 |--------------------------------------------------------------------------
 | RUTAS PÚBLICAS (Sin necesidad de Login)
