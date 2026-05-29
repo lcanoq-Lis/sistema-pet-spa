@@ -1,125 +1,90 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center px-4 py-8">
-    <div class="w-full max-w-md">
+<div class="auth-wrap">
+    <div class="auth-card">
 
-        <div class="text-center mb-8">
-            <div class="text-6xl mb-3">🐾</div>
-            <h1 class="text-3xl font-bold" style="color: #5d4037;">Pet Spa</h1>
-            <p class="text-sm mt-1" style="color: #8d6e63;">Crea tu cuenta gratis</p>
+        <div class="auth-logo">
+            <div class="auth-logo-icon">🐾</div>
+            <h1>Crear cuenta</h1>
+            <p>Regístrate para gestionar las citas de tu mascota</p>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-xl p-8">
+        @if($errors->any())
+            <div class="alert alert-error">
+                <ul style="margin:0; padding-left:16px; font-size:13px;">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-            @if($errors->any())
-                <div class="rounded-lg p-3 mb-4 text-sm" style="background:#fff3e0; color:#e65100;">
-                    <ul class="list-disc list-inside">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+        <form method="POST" action="{{ route('register.post') }}">
+            @csrf
+
+            <div class="field">
+                <label class="field-label">Nombre completo</label>
+                <input type="text" name="name" value="{{ old('name') }}"
+                    class="field-input" placeholder="Tu nombre completo" required>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Correo electrónico</label>
+                <input type="email" name="email" value="{{ old('email') }}"
+                    class="field-input" placeholder="tu@correo.com" required>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Teléfono <span style="color:#6B8F6B; font-weight:400;">(opcional)</span></label>
+                <input type="text" name="telefono" value="{{ old('telefono') }}"
+                    class="field-input" placeholder="+591 7xxxxxxx">
+            </div>
+
+            <div class="field">
+                <label class="field-label">Contraseña</label>
+                <input type="password" name="password" id="password"
+                    class="field-input" placeholder="Mínimo 8 caracteres" required
+                    oninput="checkStrength(this.value)">
+                <div class="strength-bar">
+                    <div class="strength-bar-segment" id="s1"></div>
+                    <div class="strength-bar-segment" id="s2"></div>
+                    <div class="strength-bar-segment" id="s3"></div>
+                    <div class="strength-bar-segment" id="s4"></div>
                 </div>
-            @endif
+                <p class="strength-text" id="strength-text">Debe incluir mayúsculas, minúsculas, números y símbolos</p>
+            </div>
 
-            <form method="POST" action="{{ route('register.post') }}">
-                @csrf
+            <div class="field" style="margin-bottom:24px;">
+                <label class="field-label">Confirmar contraseña</label>
+                <input type="password" name="password_confirmation"
+                    class="field-input" placeholder="Repite tu contraseña" required>
+            </div>
 
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold mb-1" style="color:#5d4037;">Nombre completo</label>
-                    <input type="text" name="name" value="{{ old('name') }}"
-                        class="w-full border-2 rounded-xl px-4 py-3 text-sm focus:outline-none"
-                        style="border-color:#d7ccc8;" placeholder="Tu nombre" required>
-                </div>
+            <button type="submit" class="btn-auth">Crear cuenta →</button>
+        </form>
 
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold mb-1" style="color:#5d4037;">Correo electrónico</label>
-                    <input type="email" name="email" value="{{ old('email') }}"
-                        class="w-full border-2 rounded-xl px-4 py-3 text-sm focus:outline-none"
-                        style="border-color:#d7ccc8;" placeholder="tu@correo.com" required>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold mb-1" style="color:#5d4037;">Teléfono <span class="font-normal" style="color:#bcaaa4;">(opcional)</span></label>
-                    <input type="text" name="telefono" value="{{ old('telefono') }}"
-                        class="w-full border-2 rounded-xl px-4 py-3 text-sm focus:outline-none"
-                        style="border-color:#d7ccc8;" placeholder="+591 7xxxxxxx">
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold mb-1" style="color:#5d4037;">Contraseña</label>
-                    <input type="password" name="password"
-                        class="w-full border-2 rounded-xl px-4 py-3 text-sm focus:outline-none"
-                        style="border-color:#d7ccc8;" placeholder="Mín. 8 caracteres" required>
-                     <p class="text-xs mt-1" style="color:#bcaaa4;">Debe incluir mayúsculas, minúsculas, números y símbolos.</p>
-
-                        <!-- Medidor de fuerza -->
-                        <div class="mt-2">
-                            <div class="flex gap-1 mb-1">
-                                <div id="bar1" class="h-2 flex-1 rounded-full transition-all duration-300" style="background:#e0e0e0;"></div>
-                                <div id="bar2" class="h-2 flex-1 rounded-full transition-all duration-300" style="background:#e0e0e0;"></div>
-                                <div id="bar3" class="h-2 flex-1 rounded-full transition-all duration-300" style="background:#e0e0e0;"></div>
-                                <div id="bar4" class="h-2 flex-1 rounded-full transition-all duration-300" style="background:#e0e0e0;"></div>
-                            </div>
-                            <p id="strength-text" class="text-xs font-semibold" style="color:#bcaaa4;">Escribe tu contraseña</p>
-                        </div>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-sm font-semibold mb-1" style="color:#5d4037;">Confirmar contraseña</label>
-                    <input type="password" name="password_confirmation"
-                        class="w-full border-2 rounded-xl px-4 py-3 text-sm focus:outline-none"
-                        style="border-color:#d7ccc8;" placeholder="Repite tu contraseña" required>
-                </div>
-
-                <button type="submit"
-                    class="w-full text-white font-bold py-3 rounded-xl transition hover:opacity-90"
-                    style="background: linear-gradient(135deg, #43a047, #66bb6a);">
-                    Crear cuenta 🐾
-                </button>
-            </form>
-
-            <p class="text-center text-sm mt-6" style="color:#8d6e63;">
-                ¿Ya tienes cuenta?
-                <a href="{{ route('login') }}" class="font-semibold hover:underline" style="color:#ff7043;">
-                    Inicia sesión
-                </a>
-            </p>
-        </div>
+        <p class="auth-footer">
+            ¿Ya tienes cuenta?
+            <a href="{{ route('login') }}">Inicia sesión</a>
+        </p>
     </div>
 </div>
+
 <script>
-document.querySelector('input[name="password"]').addEventListener('input', function() {
-    const password = this.value;
-    const bars = [
-        document.getElementById('bar1'),
-        document.getElementById('bar2'),
-        document.getElementById('bar3'),
-        document.getElementById('bar4')
-    ];
-    const text = document.getElementById('strength-text');
-
-    let score = 0;
-    if (password.length >= 8) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[@$!%*#?&]/.test(password)) score++;
-
-    const colors = ['#ef5350', '#ff7043', '#ffa726', '#43a047'];
-    const labels = ['Muy débil', 'Débil', 'Aceptable', 'Fuerte 💪'];
-    const textColors = ['#ef5350', '#ff7043', '#ffa726', '#43a047'];
-
-    bars.forEach((bar, i) => {
-        bar.style.background = i < score ? colors[score - 1] : '#e0e0e0';
-    });
-
-    if (password.length === 0) {
-        text.textContent = 'Escribe tu contraseña';
-        text.style.color = '#bcaaa4';
-    } else {
-        text.textContent = labels[score - 1] || 'Muy débil';
-        text.style.color = textColors[score - 1] || '#ef5350';
-    }
-});
+function checkStrength(pwd) {
+    const segs = ['s1','s2','s3','s4'].map(id => document.getElementById(id));
+    const txt  = document.getElementById('strength-text');
+    let score  = 0;
+    if (pwd.length >= 8)        score++;
+    if (/[A-Z]/.test(pwd))      score++;
+    if (/[0-9]/.test(pwd))      score++;
+    if (/[@$!%*#?&]/.test(pwd)) score++;
+    const colors = ['#EF5350','#FF9800','#FFC107','#2E7D32'];
+    const labels = ['Muy débil','Débil','Aceptable','Fuerte ✓'];
+    segs.forEach((s,i) => s.style.background = i < score ? colors[score-1] : '#DDE8DD');
+    txt.textContent = pwd.length === 0 ? 'Debe incluir mayúsculas, minúsculas, números y símbolos' : (labels[score-1] || 'Muy débil');
+    txt.style.color = pwd.length === 0 ? '#6B8F6B' : colors[score-1] || '#EF5350';
+}
 </script>
 @endsection

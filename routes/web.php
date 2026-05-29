@@ -157,6 +157,8 @@ Route::prefix('recepcion')->name('recepcion.')->group(function () {
 
     // Calendario
     Route::get('/calendario', [CalendarioController::class, 'index'])->name('calendario');
+    Route::get('/calendario/eventos', [CalendarioController::class, 'eventos'])->name('calendario.eventos');
+    Route::patch('/citas/{id}/mover', [CalendarioController::class, 'moverCita'])->name('citas.mover');
 
     // Pagos
     Route::post('/pagos/promo-calcular', [PagoController::class, 'calcularPromocion'])->name('pagos.promo.calcular');
