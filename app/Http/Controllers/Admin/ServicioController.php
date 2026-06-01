@@ -100,4 +100,31 @@ class ServicioController extends Controller
         return redirect()->route('admin.servicios.index')
             ->with('status', 'Servicio desactivado correctamente.');
     }
+    public function checklist($id)
+{
+    $servicio = \App\Models\Servicio::with('checklistItems.item')->findOrFail($id);
+    $todosItems = \App\Models\ChecklistItemCatalogo::where('activo', true)->orderBy('orden')->get();
+    $itemsActivos = $servicio->checklistItems->pluck('item_id')->toArray();
+    return view('admin.servicios.checklist', compact('servicio', 'todosItems', 'itemsActivos'));
+}
+
+public function guardarChecklist(Request $request, $id)
+{
+    $servicio = \App\Models\Servicio::findOrFail($id);
+    
+    // Eliminar los ítems actuales
+    \App\Models\ServicioChecklistItem::where('servicio_id', $id)->delete();
+    
+    // Guardar los nuevos
+    $items = $request->input('items', []);
+    foreach ($items as $orden => $itemId) {
+        \App\Models\ServicioChecklistItem::create([
+            'servicio_id' => $id,
+            'item_id'     => $itemId,
+            'orden'       => $orden,
+        ]);
+    }
+
+    return back()->with('status', '✅ Checklist del servicio actualizado.');
+}
 }

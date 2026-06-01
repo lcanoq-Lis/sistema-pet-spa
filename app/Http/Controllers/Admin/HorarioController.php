@@ -128,4 +128,10 @@ class HorarioController extends Controller
 
         return ['disponible' => true, 'motivo' => ''];
     }
+    public function guardarConfiguracion(Request $request)
+{
+    \App\Models\Configuracion::guardar('limite_insumos_semana', $request->limite_insumos_semana);
+    \App\Models\Configuracion::guardar('horas_cancelacion', $request->horas_cancelacion);
+    return back()->with('status', '✅ Configuración guardada correctamente.');
+}
 }

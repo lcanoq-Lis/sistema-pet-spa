@@ -131,12 +131,14 @@ public function destroy(Request $request, $id)
     }
 
     // Validar política de cancelación — mínimo 24h de anticipación
-    $horasRestantes = now()->diffInHours($cita->fecha_hora_inicio, false);
-    if ($horasRestantes < 24) {
-        return back()->withErrors([
-            'error' => "No puedes cancelar con menos de 24 horas de anticipación. Tu cita es el {$cita->fecha_hora_inicio->format('d/m/Y')} a las {$cita->fecha_hora_inicio->format('H:i')}."
-        ]);
-    }
+   $horasRestantes = now()->diffInHours($cita->fecha_hora_inicio, false);
+$horasMinimas = (int) \App\Models\Configuracion::obtener('horas_cancelacion', 24);
+
+if ($horasRestantes < $horasMinimas) {
+    return back()->withErrors([
+        'error' => "No puedes cancelar con menos de {$horasMinimas} horas de anticipación. Tu cita es el {$cita->fecha_hora_inicio->format('d/m/Y')} a las {$cita->fecha_hora_inicio->format('H:i')}."
+    ]);
+}
 
     $cita->estado             = 'cancelada';
     $cita->motivo_cancelacion = $request->motivo ?? 'Cancelada por el cliente';

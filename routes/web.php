@@ -207,6 +207,9 @@ Route::prefix('recepcion')->name('recepcion.')->group(function () {
         Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
         Route::get('/notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
         Route::get('/auditoria', [AuditController::class, 'index'])->name('auditoria.index');
+        Route::post('/configuracion', [HorarioController::class, 'guardarConfiguracion'])->name('configuracion.guardar');
+        Route::get('/servicios/{id}/checklist', [ServicioController::class, 'checklist'])->name('servicios.checklist');
+Route::post('/servicios/{id}/checklist', [ServicioController::class, 'guardarChecklist'])->name('servicios.checklist.guardar');
     });
 
 });

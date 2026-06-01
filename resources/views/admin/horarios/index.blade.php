@@ -195,6 +195,36 @@
             @endforeach
         </div>
     @endif
+    {{-- Configuración del sistema --}}
+<div style="background:white; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.06); overflow:hidden; margin-top:20px;">
+    <div style="background:linear-gradient(135deg,#5d4037,#8d6e63); padding:16px 20px; display:flex; align-items:center; gap:10px;">
+        <span style="font-size:22px;">⚙️</span>
+        <h3 style="font-size:15px; font-weight:700; color:white; margin:0;">Configuración del sistema</h3>
+    </div>
+    <form method="POST" action="{{ route('admin.configuracion.guardar') }}" style="padding:20px;">
+        @csrf
+        <div style="display:grid; grid-template-columns:1fr; gap:14px;">
+            <div>
+                <label class="form-label">Límite de insumos por groomer/semana</label>
+                <input type="number" name="limite_insumos_semana" class="form-input" min="1"
+                    value="{{ \App\Models\Configuracion::obtener('limite_insumos_semana', 20) }}"
+                    placeholder="20">
+                <p style="font-size:11px; color:#a1887f; margin-top:4px;">Se enviará alerta si un groomer supera este límite</p>
+            </div>
+            <div>
+                <label class="form-label">Horas mínimas para cancelar cita</label>
+                <input type="number" name="horas_cancelacion" class="form-input" min="1"
+                    value="{{ \App\Models\Configuracion::obtener('horas_cancelacion', 24) }}"
+                    placeholder="24">
+                <p style="font-size:11px; color:#a1887f; margin-top:4px;">El cliente no podrá cancelar con menos de estas horas</p>
+            </div>
+        </div>
+        <div style="margin-top:16px; text-align:right;">
+            <button type="submit" class="btn btn-primary">💾 Guardar configuración</button>
+        </div>
+    </form>
+</div>
+
 </div>
 
 </div>

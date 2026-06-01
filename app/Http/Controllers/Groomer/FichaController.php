@@ -51,15 +51,29 @@ class FichaController extends Controller
             'estado_inicial' => $request->estado_inicial,
         ]);
 
-        // Clonar catálogo de checklist vigente a la nueva ficha
-        $items = ChecklistItemCatalogo::where('activo', true)->get();
-        foreach ($items as $item) {
-            FichaChecklist::create([
-                'ficha_id'   => $ficha->id,
-                'item_id'    => $item->id,
-                'completado' => false,
-            ]);
-        }
+        // Cargar ítems del servicio específico, o todos si no tiene configurados
+$cita = \App\Models\Cita::with('servicio.checklistItems')->find($request->cita_id);
+$itemsServicio = $cita->servicio->checklistItems;
+
+if ($itemsServicio->isNotEmpty()) {
+    foreach ($itemsServicio as $si) {
+        FichaChecklist::create([
+            'ficha_id'   => $ficha->id,
+            'item_id'    => $si->item_id,
+            'completado' => false,
+        ]);
+    }
+} else {
+    // Si el servicio no tiene ítems configurados, usar el catálogo completo
+    $items = ChecklistItemCatalogo::where('activo', true)->get();
+    foreach ($items as $item) {
+        FichaChecklist::create([
+            'ficha_id'   => $ficha->id,
+            'item_id'    => $item->id,
+            'completado' => false,
+        ]);
+    }
+}
 
         return redirect()->route('groomer.ficha.edit', $ficha->id)->with('status', 'Ficha iniciada correctamente.');
     }

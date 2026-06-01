@@ -6,83 +6,80 @@
 @section('content')
 
 @if(session('status'))
-    <div style="background:#e8f5e9; color:#2e7d32; border-left:4px solid #43a047; padding:12px 16px; border-radius:8px; font-size:14px; margin-bottom:16px;">
+    <div class="alert alert-success">
         ✅ {{ session('status') }}
     </div>
 @endif
 
 {{-- Citas de hoy --}}
-<h3 style="font-size:18px; font-weight:700; color:#5d4037; margin-bottom:16px;">
+<h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; font-family: 'Plus Jakarta Sans', sans-serif;">
     🌅 Citas de hoy — {{ now()->format('d/m/Y') }}
 </h3>
 
 @if($citasHoy->isEmpty())
-    <div class="stat-card" style="text-align:center; padding:32px; margin-bottom:24px;">
-        <div style="font-size:48px;">😴</div>
-        <p style="color:#a1887f; margin-top:8px;">No tienes citas para hoy.</p>
+    <div class="stat-card" style="text-align: center; padding: 48px; margin-bottom: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="font-size: 48px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));">😴</div>
+        <p style="color: var(--text-secondary); margin-top: 12px; font-weight: 500;">No tienes citas asignadas para hoy.</p>
     </div>
 @else
-    <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:32px;">
+    <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px;">
         @foreach($citasHoy as $cita)
-        <div class="stat-card">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-                <div style="display:flex; gap:16px; align-items:center;">
-                    <div style="font-size:40px;">
+        <div class="stat-card" style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                <div style="display: flex; gap: 18px; align-items: center;">
+                    <div style="font-size: 38px; width: 56px; height: 56px; background: var(--bg); display: grid; place-items: center; border-radius: var(--radius-md);">
                         @if($cita->mascota->especie === 'perro') 🐶
                         @elseif($cita->mascota->especie === 'gato') 🐱
                         @else 🐾
                         @endif
                     </div>
                     <div>
-                        <h3 style="font-size:16px; font-weight:700; color:#5d4037;">{{ $cita->mascota->nombre }}</h3>
-                        <p style="font-size:13px; color:#a1887f;">{{ $cita->servicio->nombre }}</p>
-                        <p style="font-size:13px; color:#8d6e63;">
+                        <h3 style="font-size: 16px; font-weight: 700; color: var(--text-primary); font-family: 'Plus Jakarta Sans', sans-serif;">{{ $cita->mascota->nombre }}</h3>
+                        <p style="font-size: 13px; color: var(--text-secondary); font-weight: 500; margin-top: 1px;">{{ $cita->servicio->nombre }}</p>
+                        <p style="font-size: 12px; color: var(--brand); font-weight: 600; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; background: var(--brand-light); padding: 2px 8px; border-radius: 6px;">
                             🕐 {{ $cita->fecha_hora_inicio->format('H:i') }} — {{ $cita->fecha_hora_fin_estimada->format('H:i') }}
                         </p>
                         @if($cita->mascota->alergias)
-                        <p style="font-size:12px; color:#e65100; margin-top:4px;">⚠️ Alergias: {{ $cita->mascota->alergias }}</p>
+                        <p style="font-size: 12px; color: #c2410c; background: #fff7ed; border: 1px solid #ffedd5; padding: 4px 10px; border-radius: 6px; margin-top: 6px; font-weight: 500;">
+                            ⚠️ Alergias: {{ $cita->mascota->alergias }}
+                        </p>
                         @endif
                     </div>
                 </div>
 
-                <div style="display:flex; gap:8px; align-items:center;">
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
                     @php
                         $colores = [
-                            'agendada'    => ['bg'=>'#fff3e0', 'color'=>'#e65100', 'label'=>'⏳ Agendada'],
-                            'confirmada'  => ['bg'=>'#e8f5e9', 'color'=>'#2e7d32', 'label'=>'✅ Confirmada'],
-                            'en_progreso' => ['bg'=>'#e3f2fd', 'color'=>'#1565c0', 'label'=>'🔄 En progreso'],
+                            'agendada'    => ['bg'=>'#fef3c7', 'color'=>'#d97706', 'label'=>'⏳ Agendada'],
+                            'confirmada'  => ['bg'=>'#dcfce7', 'color'=>'#15803d', 'label'=>'✅ Confirmada'],
+                            'en_progreso' => ['bg'=>'#e0f2fe', 'color'=>'#0369a1', 'label'=>'🔄 En progreso'],
                             'completada'  => ['bg'=>'#f3e5f5', 'color'=>'#6a1b9a', 'label'=>'🎉 Completada'],
                         ];
-                        $c = $colores[$cita->estado] ?? ['bg'=>'#f5f5f5', 'color'=>'#333', 'label'=>$cita->estado];
+                        $c = $colores[$cita->estado] ?? ['bg'=>'var(--bg)', 'color'=>'var(--text-secondary)', 'label'=>$cita->estado];
                     @endphp
-                    <span style="background:{{ $c['bg'] }}; color:{{ $c['color'] }}; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
+                    <span style="background: {{ $c['bg'] }}; color: {{ $c['color'] }}; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">
                         {{ $c['label'] }}
                     </span>
 
-                   <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <div style="display: flex; gap: 8px;">
+                        {{-- Abrir ficha si está confirmada o agendada --}}
+                        @if(in_array($cita->estado, ['confirmada', 'agendada']))
+                        <a href="{{ route('groomer.ficha.create', $cita->id) }}" class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;">
+                            📋 Abrir Ficha
+                        </a>
+                        @elseif($cita->estado === 'en_progreso')
+                        <a href="{{ route('groomer.ficha.create', $cita->id) }}" class="btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); color: white; padding: 8px 16px; font-size: 13px; box-shadow: 0 4px 12px rgba(3,105,161,0.2);">
+                            📋 Ver Ficha
+                        </a>
+                        @endif
 
-    {{-- Abrir ficha si está confirmada o en progreso --}}
-    @if(in_array($cita->estado, ['confirmada', 'agendada']))
-    <a href="{{ route('groomer.ficha.create', $cita->id) }}"
-        style="background:linear-gradient(135deg,#ff7043,#ff8f00); color:white; font-weight:600; padding:8px 16px; border-radius:8px; text-decoration:none; font-size:13px;">
-        📋 Abrir Ficha
-    </a>
-    @elseif($cita->estado === 'en_progreso')
-    <a href="{{ route('groomer.ficha.create', $cita->id) }}"
-        style="background:linear-gradient(135deg,#1565c0,#1976d2); color:white; font-weight:600; padding:8px 16px; border-radius:8px; text-decoration:none; font-size:13px;">
-        📋 Ver Ficha
-    </a>
-    @endif
-
-    {{-- Cancelar si no está completada --}}
-    @if(!in_array($cita->estado, ['cancelada', 'completada']))
-    <button type="button"
-        onclick="abrirModalCancelar({{ $cita->id }})"
-        style="background:#ffebee; color:#c62828; border:none; padding:8px 14px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:Poppins,sans-serif;">
-        ❌ Cancelar
-    </button>
-    @endif
-</div>
+                        {{-- Cancelar si no está completada --}}
+                        @if(!in_array($cita->estado, ['cancelada', 'completada']))
+                        <button type="button" onclick="abrirModalCancelar({{ $cita->id }})" class="btn btn-danger" style="padding: 8px 14px; font-size: 13px;">
+                            ❌ Cancelar
+                        </button>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -92,24 +89,24 @@
 
 {{-- Próximas citas --}}
 @if($citasPendientes->isNotEmpty())
-<h3 style="font-size:18px; font-weight:700; color:#5d4037; margin-bottom:16px;">
+<h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin-top: 24px; margin-bottom: 16px; font-family: 'Plus Jakarta Sans', sans-serif;">
     📆 Próximas citas
 </h3>
-<div style="display:flex; flex-direction:column; gap:12px;">
+<div style="display: flex; flex-direction: column; gap: 12px;">
     @foreach($citasPendientes as $cita)
-    <div class="stat-card" style="opacity:0.8;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div style="display:flex; gap:16px; align-items:center;">
-                <div style="font-size:32px;">
+    <div class="stat-card" style="opacity: 0.85; border-style: dashed;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <div style="font-size: 28px; width: 44px; height: 44px; background: var(--bg); display: grid; place-items: center; border-radius: var(--radius-sm);">
                     @if($cita->mascota->especie === 'perro') 🐶
                     @elseif($cita->mascota->especie === 'gato') 🐱
                     @else 🐾
                     @endif
                 </div>
                 <div>
-                    <p style="font-weight:700; color:#5d4037;">{{ $cita->mascota->nombre }}</p>
-                    <p style="font-size:13px; color:#a1887f;">{{ $cita->servicio->nombre }}</p>
-                    <p style="font-size:12px; color:#8d6e63;">📅 {{ $cita->fecha_hora_inicio->format('d/m/Y H:i') }}</p>
+                    <p style="font-weight: 700; color: var(--text-primary);">{{ $cita->mascota->nombre }}</p>
+                    <p style="font-size: 13px; color: var(--text-secondary);">{{ $cita->servicio->nombre }}</p>
+                    <p style="font-size: 12px; color: var(--brand); font-weight: 600; margin-top: 2px;">📅 {{ $cita->fecha_hora_inicio->format('d/m/Y H:i') }}</p>
                 </div>
             </div>
         </div>
@@ -117,24 +114,24 @@
     @endforeach
 </div>
 @endif
+
 {{-- Modal cancelar --}}
-<div id="modal-cancelar" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:white; border-radius:20px; padding:32px; max-width:400px; width:90%; text-align:center;">
-        <div style="font-size:48px; margin-bottom:16px;">❌</div>
-        <h3 style="font-size:18px; font-weight:700; color:#5d4037; margin-bottom:8px;">Cancelar cita</h3>
-        <p style="font-size:13px; color:#a1887f; margin-bottom:16px;">Indica el motivo de cancelación.</p>
+<div id="modal-cancelar" style="display: none; position: fixed; inset: 0; background: rgba(26, 46, 26, 0.4); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: var(--surface); border-radius: var(--radius-lg); padding: 32px; max-width: 420px; width: 90%; text-align: center; box-shadow: var(--shadow-lg); border: 1px solid var(--border);">
+        <div style="font-size: 40px; margin-bottom: 14px; width: 64px; height: 64px; background: #fef2f2; display: grid; place-items: center; border-radius: 50%; margin-left: auto; margin-right: auto; color: #dc2626;">✕</div>
+        <h3 style="font-size: 19px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">Cancelar cita</h3>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px;">Por favor, indica un motivo válido para la cancelación de esta sesión.</p>
         <form id="form-cancelar" method="POST">
             @csrf
-            <textarea name="motivo" rows="3" placeholder="Motivo de cancelación (mínimo 10 caracteres)..."
-                style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px; font-size:13px; font-family:Poppins,sans-serif; margin-bottom:16px; resize:none; outline:none;"></textarea>
-            <div style="display:flex; gap:12px;">
-                <button type="button" onclick="cerrarModalCancelar()"
-                    style="flex:1; background:#f5f0eb; color:#8d6e63; font-weight:600; padding:12px; border-radius:10px; border:none; cursor:pointer; font-family:Poppins,sans-serif;">
+            <textarea name="motivo" rows="3" placeholder="Escribe aquí el motivo del descarte (mínimo 10 caracteres)..."
+                style="width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-md); padding: 12px; font-size: 13px; font-family: 'DM Sans', sans-serif; margin-bottom: 20px; resize: none; outline: none; transition: border-color 0.2s;"
+                onfocus="this.style.borderColor='var(--brand)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+            <div style="display: flex; gap: 12px;">
+                <button type="button" onclick="cerrarModalCancelar()" class="btn btn-secondary" style="flex: 1; justify-content: center; padding: 11px;">
                     Volver
                 </button>
-                <button type="submit"
-                    style="flex:1; background:linear-gradient(135deg,#ef5350,#e53935); color:white; font-weight:600; padding:12px; border-radius:10px; border:none; cursor:pointer; font-family:Poppins,sans-serif;">
-                    Cancelar cita
+                <button type="submit" class="btn" style="flex: 1; justify-content: center; background: #dc2626; color: white; font-weight: 600; padding: 11px; box-shadow: 0 4px 12px rgba(220,38,38,0.15);">
+                    Confirmar baja
                 </button>
             </div>
         </form>

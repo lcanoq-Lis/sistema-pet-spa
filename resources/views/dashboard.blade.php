@@ -52,6 +52,40 @@
     @endforeach
 </div>
 
+@php
+    $semanaInicio = now()->startOfWeek();
+    $limiteInsumos = (int) \App\Models\Configuracion::obtener('limite_insumos_semana', 20);
+    $consumoGroomers = \App\Models\Groomer::where('activo', true)
+        ->get()
+        ->map(function($g) use ($semanaInicio) {
+            $g->total_insumos = \App\Models\InsumoGrooming::whereHas('ficha', function($q) use ($g) {
+                $q->whereHas('cita', fn($q2) => $q2->where('groomer_id', $g->id));
+            })->where('estado', '!=', 'devuelto')
+              ->where('creado_en', '>=', $semanaInicio)
+              ->sum('cantidad');
+            return $g;
+        })->sortByDesc('total_insumos');
+@endphp
+
+<div class="stat-card" style="margin-bottom:20px;">
+    <h3 style="font-size:15px; font-weight:700; color:#5d4037; margin-bottom:16px;">📦 Consumo de insumos esta semana (límite: {{ $limiteInsumos }} u.)</h3>
+    @foreach($consumoGroomers as $g)
+    <div style="display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #f5f0eb;">
+        <div style="width:36px; height:36px; background:linear-gradient(135deg,#ff7043,#ff8f00); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:14px; flex-shrink:0;">
+            {{ strtoupper(substr($g->nombre, 0, 1)) }}
+        </div>
+        <div style="flex:1;">
+            <p style="font-size:13px; font-weight:600; color:#5d4037; margin:0;">{{ $g->nombre }}</p>
+            <div style="background:#f5f0eb; border-radius:4px; height:6px; margin-top:4px; overflow:hidden;">
+                <div style="height:100%; width:{{ min(100, ($g->total_insumos / $limiteInsumos) * 100) }}%; background:{{ $g->total_insumos >= $limiteInsumos ? 'linear-gradient(135deg,#c62828,#e53935)' : 'linear-gradient(135deg,#ff7043,#ff8f00)' }}; border-radius:4px;"></div>
+            </div>
+        </div>
+        <span style="font-size:13px; font-weight:700; color:{{ $g->total_insumos >= $limiteInsumos ? '#c62828' : '#5d4037' }};">
+            {{ $g->total_insumos }} u. @if($g->total_insumos >= $limiteInsumos) ⚠️ @endif
+        </span>
+    </div>
+    @endforeach
+</div>
 <h3 style="font-size:14px; font-weight:700; color:#4A7A4A; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:14px;">Accesos rápidos</h3>
 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px;">
     @foreach([

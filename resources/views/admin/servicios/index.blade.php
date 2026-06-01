@@ -60,13 +60,20 @@
                     </span>
                 </td>
                 <td style="padding:14px 16px;">
-                    <div style="display:flex; gap:6px;">
+                    <div style="display:flex; gap:6px; align-items:center;">
+                        {{-- 📍 POSICIÓN CORRECTA: El botón de Checklist ahora tiene acceso al ID de cada servicio individual --}}
+                        <a href="{{ route('admin.servicios.checklist', $servicio->id) }}"
+                            style="background:#e8f5e9; color:#2e7d32; padding:6px 12px; border-radius:6px; text-decoration:none; font-size:12px; font-weight:600;">
+                            ✅ Checklist
+                        </a>
+
                         <a href="{{ route('admin.servicios.edit', $servicio->id) }}"
                             style="background:#fff3e0; color:#ff7043; padding:6px 12px; border-radius:6px; text-decoration:none; font-size:12px; font-weight:600;">
                             ✏️ Editar
                         </a>
+
                         @if($servicio->activo)
-                        <form method="POST" action="{{ route('admin.servicios.destroy', $servicio->id) }}">
+                        <form method="POST" action="{{ route('admin.servicios.destroy', $servicio->id) }}" style="margin:0;">
                             @csrf
                             @method('DELETE')
                             <button type="submit"

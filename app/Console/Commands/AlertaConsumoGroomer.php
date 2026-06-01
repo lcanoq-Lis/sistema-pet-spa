@@ -14,7 +14,7 @@ class AlertaConsumoGroomer extends Command
     public function handle()
     {
         $semanaInicio = now()->startOfWeek();
-        $limite       = 20; // cantidad total de insumos por semana
+        $limite = (int) \App\Models\Configuracion::obtener('limite_insumos_semana', 20);
 
         $groomers = Groomer::with('usuario')->where('activo', true)->get();
 

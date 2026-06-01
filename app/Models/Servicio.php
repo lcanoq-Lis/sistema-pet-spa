@@ -35,4 +35,8 @@ class Servicio extends Model
 
         return $duracion;
     }
+    public function checklistItems()
+{
+    return $this->hasMany(ServicioChecklistItem::class)->orderBy('orden');
+}
     }

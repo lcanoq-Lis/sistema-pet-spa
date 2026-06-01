@@ -8,24 +8,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --brand:            #ff6b35;
-            --brand-dark:       #d94f1e;
-            --brand-light:      #fff4f0;
-            --amber:            #f59e0b;
-            --sidebar-bg:       #141010;
+            /* 🎨 NUEVA PALETA PROFESIONAL: Eco Verde Bosque & Menta */
+            --brand:            #2E7D32;       /* Verde Principal Eco */
+            --brand-dark:       #1B5E20;       /* Verde Oscuro */
+            --brand-light:      #E8F5E9;       /* Verde Menta Suave */
+            --amber:            #81C784;       /* Verde Secundario Esmeralda Claro */
+            --sidebar-bg:       #1A2E1A;       /* Fondo Menú Verde Bosque Muy Oscuro */
             --sidebar-w:        256px;
             --radius-sm:        8px;
             --radius-md:        12px;
             --radius-lg:        18px;
             --radius-xl:        24px;
-            --shadow-sm:        0 1px 4px rgba(0,0,0,.06);
-            --shadow-md:        0 4px 16px rgba(0,0,0,.08);
-            --shadow-lg:        0 12px 40px rgba(0,0,0,.12);
-            --text-primary:     #1a1210;
-            --text-secondary:   #7a6560;
-            --text-muted:       #b5a09a;
-            --border:           #ede8e3;
-            --bg:               #f9f5f2;
+            --shadow-sm:        0 1px 4px rgba(27,94,32,.04);
+            --shadow-md:        0 4px 16px rgba(27,94,32,.06);
+            --shadow-lg:        0 12px 40px rgba(27,94,32,.1);
+            --text-primary:     #1A2E1A;       /* Texto Principal */
+            --text-secondary:   #4F6B4F;       /* Texto Secundario */
+            --text-muted:       #8A9F8A;       /* Texto Atenuado */
+            --border:           #DDE8DD;       /* Bordes Claros Menta */
+            --bg:               #F0F5F0;       /* Fondo General Gris Menta */
             --surface:          #ffffff;
         }
 
@@ -47,7 +48,7 @@
         }
 
         /* ══════════════════════════════
-           SIDEBAR
+           SIDEBAR (Menú Lateral)
         ══════════════════════════════ */
         .sidebar {
             width: var(--sidebar-w);
@@ -62,13 +63,13 @@
             overflow: hidden;
         }
 
-        /* Decoración sutil */
+        /* Decoración radial sutil en el menú */
         .sidebar::after {
             content: '';
             position: absolute;
             top: -60px; right: -60px;
             width: 200px; height: 200px;
-            background: radial-gradient(circle, rgba(255,107,53,.15) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(46,125,50,.15) 0%, transparent 70%);
             pointer-events: none;
         }
 
@@ -86,7 +87,7 @@
             border-radius: var(--radius-md);
             display: grid; place-items: center;
             font-size: 20px;
-            box-shadow: 0 4px 14px rgba(255,107,53,.45);
+            box-shadow: 0 4px 14px rgba(46,125,50,.35);
             flex-shrink: 0;
         }
         .sb-logo-name {
@@ -94,7 +95,7 @@
             font-size: 17px; font-weight: 800;
             color: white; line-height: 1.1;
         }
-        .sb-logo-sub { font-size: 10px; color: rgba(255,255,255,.3); margin-top: 2px; }
+        .sb-logo-sub { font-size: 10px; color: #6B8F6B; margin-top: 2px; }
 
         /* Perfil */
         .sb-profile {
@@ -123,8 +124,8 @@
         }
         .sb-role-badge {
             font-size: 9px; font-weight: 700;
-            color: #ffb39a;
-            background: rgba(255,107,53,.2);
+            color: #C8E6C9;
+            background: rgba(46,125,50,.3);
             padding: 2px 8px;
             border-radius: 20px;
             text-transform: uppercase;
@@ -140,10 +141,11 @@
 
         .sb-section {
             font-size: 9.5px; font-weight: 700;
-            color: rgba(255,255,255,.2);
+            color: #6B8F6B;
             text-transform: uppercase;
             letter-spacing: 1.4px;
             padding: 18px 20px 6px;
+            opacity: 0.6;
         }
 
         .sb-link {
@@ -153,7 +155,7 @@
             padding: 9px 14px;
             margin: 1px 10px;
             border-radius: var(--radius-sm);
-            color: rgba(255,255,255,.5);
+            color: #9EB09E;
             text-decoration: none;
             font-size: 13px; font-weight: 500;
             transition: all .18s;
@@ -163,13 +165,13 @@
             font-family: 'DM Sans', sans-serif;
         }
         .sb-link:hover {
-            background: rgba(255,107,53,.12);
-            color: rgba(255,255,255,.9);
+            background: rgba(46,125,50,.15);
+            color: white;
             transform: translateX(3px);
         }
         .sb-link.active {
-            background: linear-gradient(90deg, rgba(255,107,53,.25), rgba(255,107,53,.08));
-            color: #ffb39a;
+            background: linear-gradient(90deg, rgba(46,125,50,.3), rgba(46,125,50,.05));
+            color: #E8F5E9;
             font-weight: 600;
             border-left: 2px solid var(--brand);
         }
@@ -214,7 +216,7 @@
         }
 
         /* ══════════════════════════════
-           MAIN
+           MAIN CONTENT
         ══════════════════════════════ */
         .main {
             margin-left: var(--sidebar-w);
@@ -275,9 +277,9 @@
         }
 
         /* ══════════════════════════════
-           COMPONENTS
+           COMPONENTS (Tarjetas y Botones)
         ══════════════════════════════ */
-        .card {
+        .card, .stat-card {
             background: var(--surface);
             border-radius: var(--radius-lg);
             padding: 22px;
@@ -286,15 +288,6 @@
             transition: transform .2s, box-shadow .2s;
         }
         .card:hover { box-shadow: var(--shadow-md); }
-
-        .stat-card {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: 22px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border);
-            transition: transform .2s, box-shadow .2s;
-        }
         .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
 
         .btn {
@@ -310,9 +303,9 @@
         .btn-primary {
             background: linear-gradient(135deg, var(--brand), var(--amber));
             color: white;
-            box-shadow: 0 3px 10px rgba(255,107,53,.35);
+            box-shadow: 0 3px 10px rgba(46,125,50,.25);
         }
-        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(255,107,53,.4); opacity: .95; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(46,125,50,.35); opacity: .95; }
         .btn-secondary {
             background: var(--surface);
             color: var(--text-primary);
@@ -340,7 +333,7 @@
             margin-bottom: 20px;
             display: flex; align-items: center; gap: 10px;
         }
-        .alert-success { background: #f0fdf4; color: #15803d; border-left: 3px solid #22c55e; }
+        .alert-success { background: #e8f5e9; color: #1b5e20; border-left: 3px solid #2e7d32; }
         .alert-error   { background: #fef2f2; color: #dc2626; border-left: 3px solid #ef4444; }
         .alert-info    { background: #eff6ff; color: #1d4ed8; border-left: 3px solid #3b82f6; }
 
@@ -360,7 +353,7 @@
         }
         td { padding: 13px 16px; border-bottom: 1px solid var(--border); color: var(--text-primary); }
         tbody tr:last-child td { border-bottom: none; }
-        tbody tr:hover { background: #faf7f5; }
+        tbody tr:hover { background: #f7faf7; }
 
         /* Forms */
         .form-label {
@@ -385,11 +378,11 @@
         }
         .form-input:focus {
             border-color: var(--brand);
-            box-shadow: 0 0 0 3px rgba(255,107,53,.1);
+            box-shadow: 0 0 0 3px rgba(46,125,50,.1);
         }
         .form-select {
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23b5a09a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234F6B4F' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 14px center;
             padding-right: 36px;
@@ -402,9 +395,7 @@
         }
         .fade-up { animation: fadeUp .32s ease forwards; }
 
-        /* ══════════════════════════════
-           RESPONSIVE
-        ══════════════════════════════ */
+        /* Responsive Layout */
         @media (max-width: 1024px) {
             :root { --sidebar-w: 220px; }
         }
@@ -518,13 +509,12 @@
             <a href="{{ route('recepcion.pagos.index') }}" class="sb-link {{ request()->routeIs('recepcion.pagos.*') ? 'active' : '' }}">
                 <span class="sb-icon">💳</span> Pagos
             </a>
+            <a href="{{ route('recepcion.pagos.cierre') }}" class="sb-link {{ request()->routeIs('recepcion.pagos.cierre') ? 'active' : '' }}">
+                <span class="sb-icon">🏦</span> Cierre de caja
+            </a>
             <a href="{{ route('recepcion.clientes.index') }}" class="sb-link {{ request()->routeIs('recepcion.clientes.*') ? 'active' : '' }}">
                 <span class="sb-icon">🐶</span> Clientes
             </a>
-            4. Agrega el link en el sidebar dentro de la sección de recepción:
-            <a href="{{ route('recepcion.pagos.cierre') }}" class="sb-link">
-                    <span class="sb-icon">🏦</span> Cierre de caja
-                </a>
         @endif
 
         @if(Auth::user()->rol?->nombre === 'groomer')
@@ -570,7 +560,7 @@
     </div>
 </aside>
 
-{{-- ═══════ MAIN ═══════ --}}
+{{-- ═══════ MAIN CONTENT AREA ═══════ --}}
 <div class="main" id="main">
 
     <header class="topbar">
@@ -608,8 +598,8 @@ function toggleSidebar() {
     document.body.style.overflow = document.getElementById('sidebar').classList.contains('open') ? 'hidden' : '';
 }
 function closeSidebar() {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sb-overlay').classList.remove('open');
+    document.getElementById('sidebar').remove('open');
+    document.getElementById('sb-overlay').remove('open');
     document.body.style.overflow = '';
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
