@@ -1,15 +1,15 @@
 @extends('layouts.dashboard')
 
-@section('page-title', '➕ Solicitar Cita')
+@section('page-title', 'Solicitar Cita')
 @section('page-subtitle', 'Elige tu mascota, servicio y horario')
 
 @section('content')
 <div style="max-width:650px; margin:0 auto;">
-    <div class="stat-card">
+    <div style="background:#fff; border-radius:20px; border:0.5px solid #e0e0e0; padding:28px;">
 
         @if($errors->any())
-            <div style="background:#fff3e0; color:#e65100; border-left:4px solid #ff7043; padding:12px 16px; border-radius:8px; font-size:14px; margin-bottom:16px;">
-                <ul style="margin:0; padding-left:16px;">
+            <div style="background:#FFF8E1; border-left:4px solid #FF7043; border-radius:12px; padding:14px 18px; margin-bottom:24px;">
+                <ul style="margin:0; padding-left:20px; color:#E65100; font-size:13px;">
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -18,12 +18,14 @@
         @endif
 
         @if($mascotas->isEmpty())
-            <div style="text-align:center; padding:32px;">
-                <div style="font-size:48px;">🐾</div>
-                <p style="color:#a1887f; margin-top:12px;">Primero debes registrar una mascota.</p>
+            <div style="text-align:center; padding:40px 24px;">
+                <div style="width:64px; height:64px; background:#F5F5F0; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+                    <i class="ti ti-paw" style="font-size:28px; color:#8A9B8A;"></i>
+                </div>
+                <p style="color:#8A9B8A; font-size:14px; margin:0 0 12px;">Primero debes registrar una mascota.</p>
                 <a href="{{ route('cliente.mascotas.create') }}"
-                    style="display:inline-block; margin-top:12px; background:linear-gradient(135deg,#ff7043,#ff8f00); color:white; font-weight:600; padding:10px 20px; border-radius:10px; text-decoration:none;">
-                    Registrar mascota
+                    style="display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg, #FF7043, #F57F17); color:#fff; font-weight:600; padding:12px 24px; border-radius:40px; text-decoration:none;">
+                    <i class="ti ti-dog" style="font-size:16px;"></i> Registrar mascota
                 </a>
             </div>
         @else
@@ -32,10 +34,14 @@
             @csrf
 
             {{-- Mascota --}}
-            <div style="margin-bottom:16px;">
-                <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">Mascota *</label>
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-size:12px; font-weight:700; color:#4A7A4A; margin-bottom:8px;">
+                    <i class="ti ti-dog" style="font-size:12px;"></i> Mascota *
+                </label>
                 <select name="mascota_id" id="select-mascota"
-                    style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif;"
+                    style="width:100%; border:1.5px solid #e0e0e0; border-radius:12px; padding:12px 14px; font-size:13px; outline:none; background:#FAFBF7; cursor:pointer; transition:all 0.2s;"
+                    onfocus="this.style.borderColor='#FF7043'; this.style.background='#fff'"
+                    onblur="this.style.borderColor='#e0e0e0'; this.style.background='#FAFBF7'"
                     onchange="actualizarDuracion()" required>
                     <option value="">Selecciona tu mascota...</option>
                     @foreach($mascotas as $mascota)
@@ -50,10 +56,14 @@
             </div>
 
             {{-- Servicio --}}
-            <div style="margin-bottom:16px;">
-                <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">Servicio *</label>
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-size:12px; font-weight:700; color:#4A7A4A; margin-bottom:8px;">
+                    <i class="ti ti-scissors" style="font-size:12px;"></i> Servicio *
+                </label>
                 <select name="servicio_id" id="select-servicio"
-                    style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif;"
+                    style="width:100%; border:1.5px solid #e0e0e0; border-radius:12px; padding:12px 14px; font-size:13px; outline:none; background:#FAFBF7; cursor:pointer; transition:all 0.2s;"
+                    onfocus="this.style.borderColor='#FF7043'; this.style.background='#fff'"
+                    onblur="this.style.borderColor='#e0e0e0'; this.style.background='#FAFBF7'"
                     onchange="actualizarDuracion()" required>
                     <option value="">Selecciona un servicio...</option>
                     @foreach($servicios as $servicio)
@@ -69,22 +79,29 @@
             </div>
 
             {{-- Duración estimada --}}
-            <div id="div-duracion" style="display:none; background:#fff3e0; border-radius:10px; padding:12px 16px; margin-bottom:16px;">
-                <p style="font-size:13px; color:#e65100; font-weight:600;">
-                    ⏱️ Duración estimada: <span id="texto-duracion"></span>
+            <div id="div-duracion" style="display:none; background:#FFF8E1; border-radius:14px; padding:14px 18px; margin-bottom:20px;">
+                <p style="font-size:13px; color:#E65100; font-weight:600; display:flex; align-items:center; gap:6px; margin:0 0 4px;">
+                    <i class="ti ti-clock" style="font-size:14px;"></i> Duración estimada: <span id="texto-duracion"></span>
                 </p>
-                <p style="font-size:13px; color:#e65100; font-weight:600;">
-                    💰 Precio: Bs. <span id="texto-precio"></span>
+                <p style="font-size:13px; color:#E65100; font-weight:600; display:flex; align-items:center; gap:6px; margin:0;">
+                    <i class="ti ti-coin" style="font-size:14px;"></i> Precio: Bs. <span id="texto-precio"></span>
                 </p>
+                <div id="aviso-temperamento" style="display:none; margin-top:8px; padding:8px 12px; background:#FFEBEE; border-radius:10px;">
+                    <i class="ti ti-alert-triangle" style="font-size:12px; color:#C62828;"></i>
+                    <span style="font-size:11px; color:#C62828; font-weight:500;"></span>
+                </div>
             </div>
 
             {{-- Groomer --}}
-            <div style="margin-bottom:16px;">
-                <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">
-                    Groomer preferido <span style="color:#a1887f; font-weight:400;">(opcional)</span>
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-size:12px; font-weight:700; color:#4A7A4A; margin-bottom:8px;">
+                    <i class="ti ti-user" style="font-size:12px;"></i> Groomer preferido
+                    <span style="color:#8A9B8A; font-weight:400;">(opcional)</span>
                 </label>
                 <select name="groomer_id"
-                    style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif;">
+                    style="width:100%; border:1.5px solid #e0e0e0; border-radius:12px; padding:12px 14px; font-size:13px; outline:none; background:#FAFBF7; cursor:pointer; transition:all 0.2s;"
+                    onfocus="this.style.borderColor='#FF7043'; this.style.background='#fff'"
+                    onblur="this.style.borderColor='#e0e0e0'; this.style.background='#FAFBF7'">
                     <option value="">Sin preferencia (asignación automática)</option>
                     @foreach($groomers as $groomer)
                         <option value="{{ $groomer->id }}" {{ old('groomer_id') == $groomer->id ? 'selected' : '' }}>
@@ -95,18 +112,26 @@
             </div>
 
             {{-- Fecha y hora --}}
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
                 <div>
-                    <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">Fecha *</label>
+                    <label style="display:block; font-size:12px; font-weight:700; color:#4A7A4A; margin-bottom:8px;">
+                        <i class="ti ti-calendar" style="font-size:12px;"></i> Fecha *
+                    </label>
                     <input type="date" name="fecha" value="{{ old('fecha') }}"
                         min="{{ now()->format('Y-m-d') }}"
-                        style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif;"
+                        style="width:100%; border:1.5px solid #e0e0e0; border-radius:12px; padding:12px 14px; font-size:13px; outline:none; background:#FAFBF7; transition:all 0.2s;"
+                        onfocus="this.style.borderColor='#FF7043'; this.style.background='#fff'"
+                        onblur="this.style.borderColor='#e0e0e0'; this.style.background='#FAFBF7'"
                         required>
                 </div>
                 <div>
-                    <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">Hora *</label>
+                    <label style="display:block; font-size:12px; font-weight:700; color:#4A7A4A; margin-bottom:8px;">
+                        <i class="ti ti-clock" style="font-size:12px;"></i> Hora *
+                    </label>
                     <select name="hora"
-                        style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif;"
+                        style="width:100%; border:1.5px solid #e0e0e0; border-radius:12px; padding:12px 14px; font-size:13px; outline:none; background:#FAFBF7; cursor:pointer; transition:all 0.2s;"
+                        onfocus="this.style.borderColor='#FF7043'; this.style.background='#fff'"
+                        onblur="this.style.borderColor='#e0e0e0'; this.style.background='#FAFBF7'"
                         required>
                         <option value="">Selecciona...</option>
                         @for($h = 9; $h <= 17; $h++)
@@ -123,22 +148,25 @@
 
             {{-- Notas --}}
             <div style="margin-bottom:24px;">
-                <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">
-                    Notas adicionales <span style="color:#a1887f; font-weight:400;">(opcional)</span>
+                <label style="display:block; font-size:12px; font-weight:700; color:#4A7A4A; margin-bottom:8px;">
+                    <i class="ti ti-notes" style="font-size:12px;"></i> Notas adicionales
+                    <span style="color:#8A9B8A; font-weight:400;">(opcional)</span>
                 </label>
                 <textarea name="notas_cliente" rows="3"
-                    style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif; resize:vertical;"
+                    style="width:100%; border:1.5px solid #e0e0e0; border-radius:12px; padding:12px 14px; font-size:13px; font-family:inherit; outline:none; resize:vertical; background:#FAFBF7; transition:all 0.2s;"
+                    onfocus="this.style.borderColor='#FF7043'; this.style.background='#fff'"
+                    onblur="this.style.borderColor='#e0e0e0'; this.style.background='#FAFBF7'"
                     placeholder="Ej: Mi mascota es nerviosa, por favor tener cuidado...">{{ old('notas_cliente') }}</textarea>
             </div>
 
-            <div style="display:flex; gap:12px;">
+            <div style="display:flex; gap:14px;">
                 <a href="{{ route('cliente.citas.index') }}"
-                    style="flex:1; text-align:center; background:#f5f0eb; color:#8d6e63; font-weight:600; padding:12px; border-radius:10px; text-decoration:none; font-size:14px;">
-                    ← Cancelar
+                    style="flex:1; text-align:center; background:#fff; border:1.5px solid #e0e0e0; border-radius:14px; padding:12px; font-weight:600; color:#5D6E5D; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+                    <i class="ti ti-x" style="font-size:14px;"></i> Cancelar
                 </a>
                 <button type="submit"
-                    style="flex:2; background:linear-gradient(135deg,#ff7043,#ff8f00); color:white; font-weight:700; padding:12px; border-radius:10px; border:none; cursor:pointer; font-size:14px; font-family:Poppins,sans-serif;">
-                    Solicitar Cita 📅
+                    style="flex:2; background:linear-gradient(135deg, #FF7043, #F57F17); border:none; border-radius:14px; padding:12px; font-weight:700; color:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="ti ti-calendar-plus" style="font-size:14px;"></i> Solicitar Cita
                 </button>
             </div>
         </form>
@@ -168,20 +196,27 @@ function actualizarDuracion() {
     const factor       = factores[tamano] || 1.0;
     let durFinal       = Math.ceil(duracion * factor);
 
-    // Ajuste por temperamento
-    let avisoTemperamento = '';
+    let avisoHTML = '';
+    let avisoVisible = false;
     if (temperamento === 'agresivo' || temperamento === 'nervioso') {
         durFinal = Math.ceil(durFinal * 1.20);
-        avisoTemperamento = `<p style="font-size:12px; color:#c62828; margin-top:4px;">⚠️ Se agregó 20% de tiempo extra por temperamento ${temperamento}.</p>`;
+        avisoHTML = `<i class="ti ti-alert-triangle" style="font-size:12px;"></i> Se agregó 20% de tiempo extra por temperamento ${temperamento}.`;
+        avisoVisible = true;
     }
 
     document.getElementById('texto-duracion').textContent = durFinal + ' minutos';
     document.getElementById('texto-precio').textContent   = precio.toFixed(2);
-    document.getElementById('div-duracion').innerHTML     = `
-        <p style="font-size:13px; color:#e65100; font-weight:600;">⏱️ Duración estimada: <span>${durFinal} minutos</span></p>
-        <p style="font-size:13px; color:#e65100; font-weight:600;">💰 Precio: Bs. <span>${precio.toFixed(2)}</span></p>
-        ${avisoTemperamento}
-    `;
+    
+    const avisoDiv = document.getElementById('aviso-temperamento');
+    if (avisoVisible && avisoDiv) {
+        avisoDiv.style.display = 'flex';
+        avisoDiv.style.alignItems = 'center';
+        avisoDiv.style.gap = '6px';
+        avisoDiv.querySelector('span').textContent = avisoHTML;
+    } else if (avisoDiv) {
+        avisoDiv.style.display = 'none';
+    }
+    
     divDuracion.style.display = 'block';
 }
 </script>

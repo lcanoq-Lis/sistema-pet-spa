@@ -46,7 +46,7 @@ class User extends Authenticatable
 
     public function groomer()
     {
-        return $this->hasOne(Groomer::class, 'user_id');
+        return $this->hasOne(Groomer::class, 'usuario_id');
     }
 
     public function authLogs()

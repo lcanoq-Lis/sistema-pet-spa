@@ -1,178 +1,202 @@
 @extends('layouts.dashboard')
 
-@section('page-title', '🐾 Mis Mascotas')
+@section('page-title', 'Mis Mascotas')
 @section('page-subtitle', 'Administra el perfil de tus mascotas')
 
 @section('content')
 
 @if(session('status'))
-    <div style="background:#e8f5e9; color:#2e7d32; border-left:4px solid #43a047; padding:12px 16px; border-radius:8px; font-size:14px; margin-bottom:16px;">
-        ✅ {{ session('status') }}
+    <div style="background:#E8F5E9; border-left:4px solid #2E7D32; border-radius:12px; padding:14px 18px; margin-bottom:24px; display:flex; align-items:center; gap:10px;">
+        <i class="ti ti-circle-check" style="color:#2E7D32; font-size:18px;"></i>
+        <p style="color:#2E7D32; font-size:13px; font-weight:600; margin:0;">{{ session('status') }}</p>
     </div>
 @endif
 
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-    <h2 style="font-size:20px; font-weight:700; color:#5d4037;">Mis Mascotas</h2>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; flex-wrap:wrap; gap:16px;">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:36px; height:36px; background:linear-gradient(135deg, #FF7043, #F57F17); border-radius:10px; display:flex; align-items:center; justify-content:center;">
+            <i class="ti ti-paw" style="font-size:18px; color:#fff;"></i>
+        </div>
+        <h2 style="font-size:18px; font-weight:700; color:#1A2E1A; margin:0;">Mis Mascotas</h2>
+    </div>
     <a href="{{ route('cliente.mascotas.create') }}"
-        style="background:linear-gradient(135deg,#ff7043,#ff8f00); color:white; font-weight:600; padding:10px 20px; border-radius:10px; text-decoration:none; font-size:14px;">
-        + Agregar Mascota
+        style="background:linear-gradient(135deg, #FF7043, #F57F17); color:#fff; font-weight:600; padding:10px 24px; border-radius:40px; text-decoration:none; font-size:13px; display:inline-flex; align-items:center; gap:8px;">
+        <i class="ti ti-plus" style="font-size:14px;"></i> Agregar Mascota
     </a>
 </div>
 
 @if($mascotas->isEmpty())
-    <div class="stat-card" style="text-align:center; padding:48px;">
-        <div style="font-size:64px; margin-bottom:16px;">🐶</div>
-        <h3 style="font-size:18px; font-weight:700; color:#5d4037;">No tienes mascotas registradas</h3>
-        <p style="color:#a1887f; margin-top:8px; font-size:14px;">Agrega tu primera mascota para solicitar citas</p>
+    <div style="background:#fff; border-radius:20px; border:0.5px solid #e0e0e0; text-align:center; padding:56px 24px;">
+        <div style="width:72px; height:72px; background:#F5F5F0; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+            <i class="ti ti-dog" style="font-size:32px; color:#8A9B8A;"></i>
+        </div>
+        <h3 style="font-size:18px; font-weight:700; color:#1A2E1A;">No tienes mascotas registradas</h3>
+        <p style="color:#8A9B8A; margin-top:6px; font-size:13px;">Agrega tu primera mascota para solicitar citas</p>
         <a href="{{ route('cliente.mascotas.create') }}"
-            style="display:inline-block; margin-top:16px; background:linear-gradient(135deg,#ff7043,#ff8f00); color:white; font-weight:600; padding:12px 24px; border-radius:10px; text-decoration:none;">
-            Agregar primera mascota
+            style="display:inline-flex; align-items:center; gap:8px; margin-top:16px; background:linear-gradient(135deg, #FF7043, #F57F17); color:#fff; font-weight:600; padding:12px 28px; border-radius:40px; text-decoration:none;">
+            <i class="ti ti-paw" style="font-size:14px;"></i> Agregar primera mascota
         </a>
     </div>
 @else
-    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px;">
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:20px;">
         @foreach($mascotas as $mascota)
-        <div class="stat-card">
-            {{-- Emoji según especie --}}
-            <div style="font-size:48px; text-align:center; margin-bottom:12px;">
-                @if($mascota->especie === 'perro') 🐶
-                @elseif($mascota->especie === 'gato') 🐱
-                @else 🐾
-                @endif
+        <div style="background:#fff; border-radius:20px; border:0.5px solid #e0e0e0; overflow:hidden; transition:box-shadow 0.2s;">
+            {{-- Header con icono y nombre --}}
+            <div style="background:linear-gradient(135deg, #FF7043, #F57F17); padding:20px; text-align:center;">
+                <div style="width:64px; height:64px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
+                    @if($mascota->especie === 'perro')
+                        <i class="ti ti-dog" style="font-size:32px; color:#fff;"></i>
+                    @elseif($mascota->especie === 'gato')
+                        <i class="ti ti-cat" style="font-size:32px; color:#fff;"></i>
+                    @else
+                        <i class="ti ti-paw" style="font-size:32px; color:#fff;"></i>
+                    @endif
+                </div>
+                <h3 style="font-size:18px; font-weight:800; color:#fff; margin:0;">{{ $mascota->nombre }}</h3>
             </div>
 
-            <h3 style="font-size:18px; font-weight:700; color:#5d4037; text-align:center;">
-                {{ $mascota->nombre }}
-            </h3>
-
-            <div style="margin-top:12px; space-y:8px;">
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f5f0eb;">
-                    <span style="font-size:13px; color:#a1887f;">Especie</span>
-                    <span style="font-size:13px; font-weight:600; color:#5d4037;">{{ ucfirst($mascota->especie) }}</span>
+            <div style="padding:20px;">
+                <div style="margin-bottom:16px;">
+                    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #F0F0EA;">
+                        <span style="font-size:12px; color:#8A9B8A; display:flex; align-items:center; gap:4px;"><i class="ti ti-category" style="font-size:11px;"></i> Especie</span>
+                        <span style="font-size:12px; font-weight:600; color:#1A2E1A;">{{ ucfirst($mascota->especie) }}</span>
+                    </div>
+                    @if($mascota->raza)
+                    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #F0F0EA;">
+                        <span style="font-size:12px; color:#8A9B8A; display:flex; align-items:center; gap:4px;"><i class="ti ti-heart" style="font-size:11px;"></i> Raza</span>
+                        <span style="font-size:12px; font-weight:600; color:#1A2E1A;">{{ $mascota->raza }}</span>
+                    </div>
+                    @endif
+                    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #F0F0EA;">
+                        <span style="font-size:12px; color:#8A9B8A; display:flex; align-items:center; gap:4px;"><i class="ti ti-ruler" style="font-size:11px;"></i> Tamaño</span>
+                        <span style="font-size:12px; font-weight:600; color:#1A2E1A;">{{ strtoupper($mascota->tamano) }}</span>
+                    </div>
+                    @if($mascota->peso_kg)
+                    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #F0F0EA;">
+                        <span style="font-size:12px; color:#8A9B8A; display:flex; align-items:center; gap:4px;"><i class="ti ti-weight" style="font-size:11px;"></i> Peso</span>
+                        <span style="font-size:12px; font-weight:600; color:#1A2E1A;">{{ $mascota->peso_kg }} kg</span>
+                    </div>
+                    @endif
+                    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #F0F0EA;">
+                        <span style="font-size:12px; color:#8A9B8A; display:flex; align-items:center; gap:4px;"><i class="ti ti-cake" style="font-size:11px;"></i> Edad</span>
+                        <span style="font-size:12px; font-weight:600; color:#1A2E1A;">{{ $mascota->edad() }}</span>
+                    </div>
+                    @if($mascota->temperamento)
+                    <div style="display:flex; justify-content:space-between; padding:8px 0;">
+                        <span style="font-size:12px; color:#8A9B8A; display:flex; align-items:center; gap:4px;"><i class="ti ti-mood-smile" style="font-size:11px;"></i> Temperamento</span>
+                        <span style="font-size:12px; font-weight:600; color:#1A2E1A;">{{ ucfirst($mascota->temperamento) }}</span>
+                    </div>
+                    @endif
                 </div>
-                @if($mascota->raza)
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f5f0eb;">
-                    <span style="font-size:13px; color:#a1887f;">Raza</span>
-                    <span style="font-size:13px; font-weight:600; color:#5d4037;">{{ $mascota->raza }}</span>
+
+                @if($mascota->alergias)
+                <div style="background:#FFF8E1; border-radius:12px; padding:10px 14px; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                    <i class="ti ti-alert-triangle" style="font-size:14px; color:#F57F17;"></i>
+                    <div>
+                        <p style="font-size:11px; font-weight:700; color:#E65100; margin:0;">Alergias:</p>
+                        <p style="font-size:11px; color:#BF360C; margin:2px 0 0;">{{ $mascota->alergias }}</p>
+                    </div>
                 </div>
                 @endif
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f5f0eb;">
-                    <span style="font-size:13px; color:#a1887f;">Tamaño</span>
-                    <span style="font-size:13px; font-weight:600; color:#5d4037;">{{ strtoupper($mascota->tamano) }}</span>
-                </div>
-                @if($mascota->peso_kg)
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f5f0eb;">
-                    <span style="font-size:13px; color:#a1887f;">Peso</span>
-                    <span style="font-size:13px; font-weight:600; color:#5d4037;">{{ $mascota->peso_kg }} kg</span>
-                </div>
-                @endif
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f5f0eb;">
-                    <span style="font-size:13px; color:#a1887f;">Edad</span>
-                    <span style="font-size:13px; font-weight:600; color:#5d4037;">{{ $mascota->edad() }}</span>
-                </div>
-                @if($mascota->temperamento)
-                <div style="display:flex; justify-content:space-between; padding:6px 0;">
-                    <span style="font-size:13px; color:#a1887f;">Temperamento</span>
-                    <span style="font-size:13px; font-weight:600; color:#5d4037;">{{ ucfirst($mascota->temperamento) }}</span>
-                </div>
-                @endif
-            </div>
 
-            @if($mascota->alergias)
-            <div style="background:#fff3e0; border-radius:8px; padding:8px 12px; margin-top:12px;">
-                <p style="font-size:12px; color:#e65100; font-weight:600;">⚠️ Alergias:</p>
-                <p style="font-size:12px; color:#bf360c;">{{ $mascota->alergias }}</p>
-            </div>
-            @endif
-            {{-- Vacunas --}}
-<div style="margin-top:12px;">
-    <p style="font-size:12px; font-weight:600; color:#5d4037; margin-bottom:6px;">💉 Vacunas:</p>
-    @if($mascota->vacunas->isEmpty())
-        <p style="font-size:12px; color:#a1887f;">Sin vacunas registradas.</p>
-    @else
-        @foreach($mascota->vacunas as $vacuna)
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #f5f0eb;">
-            <span style="font-size:12px; color:#5d4037;">{{ $vacuna->nombre_vacuna }}</span>
-            <span style="font-size:11px; color:{{ $vacuna->estaVigente() ? '#2e7d32' : '#c62828' }}; font-weight:600;">
-                {{ $vacuna->estaVigente() ? '✅ Vigente' : '⚠️ Vencida' }}
-            </span>
-        </div>
-        @if($vacuna->observaciones)
-        <a href="{{ $vacuna->observaciones }}" target="_blank"
-            style="font-size:11px; color:#1565c0;">📎 Ver archivo</a>
-        @endif
-        @endforeach
-    @endif
-</div>
-
-{{-- Agregar vacuna --}}
-<div style="margin-top:12px; border-top:1px solid #f5f0eb; padding-top:12px;">
-    <button type="button" onclick="toggleVacuna({{ $mascota->id }})"
-        style="background:#e3f2fd; color:#1565c0; border:none; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; font-family:Poppins,sans-serif;">
-        💉 Agregar vacuna
-    </button>
-    <div id="form-vacuna-{{ $mascota->id }}" style="display:none; margin-top:12px;">
-        <form method="POST" action="{{ route('cliente.mascotas.vacuna', $mascota->id) }}"
-            enctype="multipart/form-data">
-            @csrf
-            <input type="text" name="nombre_vacuna" placeholder="Nombre de la vacuna"
-                style="width:100%; border:2px solid #d7ccc8; border-radius:8px; padding:8px 10px; font-size:13px; outline:none; font-family:Poppins,sans-serif; margin-bottom:8px;">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
-                <div>
-                    <label style="font-size:11px; color:#5d4037; font-weight:600;">Fecha aplicación</label>
-                    <input type="date" name="fecha_aplicacion"
-                        style="width:100%; border:2px solid #d7ccc8; border-radius:8px; padding:6px 8px; font-size:13px; outline:none; font-family:Poppins,sans-serif;">
+                {{-- Vacunas --}}
+                <div style="margin-top:12px;">
+                    <p style="font-size:11px; font-weight:700; color:#4A7A4A; margin-bottom:8px; display:flex; align-items:center; gap:4px;">
+                        <i class="ti ti-vaccine" style="font-size:12px;"></i> Vacunas:
+                    </p>
+                    @if($mascota->vacunas->isEmpty())
+                        <p style="font-size:11px; color:#8A9B8A;">Sin vacunas registradas.</p>
+                    @else
+                        @foreach($mascota->vacunas as $vacuna)
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #F0F0EA;">
+                            <span style="font-size:11px; color:#1A2E1A;">{{ $vacuna->nombre_vacuna }}</span>
+                            <span style="font-size:10px; color:{{ $vacuna->estaVigente() ? '#2E7D32' : '#C62828' }}; font-weight:700; display:inline-flex; align-items:center; gap:3px;">
+                                <i class="ti {{ $vacuna->estaVigente() ? 'ti-circle-check' : 'ti-alert-circle' }}" style="font-size:10px;"></i>
+                                {{ $vacuna->estaVigente() ? 'Vigente' : 'Vencida' }}
+                            </span>
+                        </div>
+                        @if($vacuna->observaciones)
+                        <a href="{{ $vacuna->observaciones }}" target="_blank" style="font-size:10px; color:#1565C0; display:inline-flex; align-items:center; gap:3px; margin-top:2px;">
+                            <i class="ti ti-file" style="font-size:10px;"></i> Ver archivo
+                        </a>
+                        @endif
+                        @endforeach
+                    @endif
                 </div>
-                <div>
-                    <label style="font-size:11px; color:#5d4037; font-weight:600;">Fecha vencimiento</label>
-                    <input type="date" name="fecha_vencimiento"
-                        style="width:100%; border:2px solid #d7ccc8; border-radius:8px; padding:6px 8px; font-size:13px; outline:none; font-family:Poppins,sans-serif;">
-                </div>
-            </div>
-            <input type="file" name="archivo" accept=".pdf,.jpg,.jpeg,.png"
-                style="width:100%; border:2px solid #d7ccc8; border-radius:8px; padding:6px 8px; font-size:12px; font-family:Poppins,sans-serif; margin-bottom:8px;">
-            <p style="font-size:11px; color:#a1887f; margin-bottom:8px;">PDF, JPG o PNG — máx 5MB</p>
-            <button type="submit"
-                style="width:100%; background:linear-gradient(135deg,#1565c0,#1976d2); color:white; font-weight:600; padding:8px; border-radius:8px; border:none; cursor:pointer; font-size:13px; font-family:Poppins,sans-serif;">
-                💉 Guardar vacuna
-            </button>
-        </form>
-    </div>
-</div>
 
-            <div style="display:flex; gap:8px; margin-top:16px;">
-                <a href="{{ route('cliente.mascotas.edit', $mascota->id) }}"
-                    style="flex:1; text-align:center; background:#fff3e0; color:#ff7043; font-weight:600; padding:8px; border-radius:8px; text-decoration:none; font-size:13px;">
-                    ✏️ Editar
-                </a>
-                <form method="POST" action="{{ route('cliente.mascotas.destroy', $mascota->id) }}" style="flex:1;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="button"
-                        onclick="abrirModal(this.closest('form'), '{{ $mascota->nombre }}')"
-                        style="width:100%; background:#ffebee; color:#c62828; font-weight:600; padding:8px; border-radius:8px; border:none; cursor:pointer; font-size:13px; font-family:Poppins,sans-serif;">
-                        🗑️ Eliminar
+                {{-- Agregar vacuna --}}
+                <div style="margin-top:12px; border-top:1px solid #F0F0EA; padding-top:12px;">
+                    <button type="button" onclick="toggleVacuna({{ $mascota->id }})"
+                        style="background:#E3F2FD; color:#1565C0; border:none; padding:6px 14px; border-radius:30px; font-size:11px; font-weight:600; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                        <i class="ti ti-vaccine" style="font-size:11px;"></i> Agregar vacuna
                     </button>
-                </form>
+                    <div id="form-vacuna-{{ $mascota->id }}" style="display:none; margin-top:12px;">
+                        <form method="POST" action="{{ route('cliente.mascotas.vacuna', $mascota->id) }}" enctype="multipart/form-data">
+                            @csrf
+                            <input type="text" name="nombre_vacuna" placeholder="Nombre de la vacuna" required
+                                style="width:100%; border:1.5px solid #e0e0e0; border-radius:10px; padding:10px 12px; font-size:12px; outline:none; background:#FAFBF7; margin-bottom:8px;"
+                                onfocus="this.style.borderColor='#1565C0'"
+                                onblur="this.style.borderColor='#e0e0e0'">
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+                                <div>
+                                    <label style="font-size:10px; color:#5D6E5D; font-weight:600;">Fecha aplicación</label>
+                                    <input type="date" name="fecha_aplicacion"
+                                        style="width:100%; border:1.5px solid #e0e0e0; border-radius:10px; padding:8px 10px; font-size:12px; outline:none;">
+                                </div>
+                                <div>
+                                    <label style="font-size:10px; color:#5D6E5D; font-weight:600;">Fecha vencimiento</label>
+                                    <input type="date" name="fecha_vencimiento"
+                                        style="width:100%; border:1.5px solid #e0e0e0; border-radius:10px; padding:8px 10px; font-size:12px; outline:none;">
+                                </div>
+                            </div>
+                            <input type="file" name="archivo" accept=".pdf,.jpg,.jpeg,.png"
+                                style="width:100%; border:1.5px solid #e0e0e0; border-radius:10px; padding:8px 10px; font-size:11px; margin-bottom:8px;">
+                            <p style="font-size:9px; color:#8A9B8A; margin-bottom:8px;">PDF, JPG o PNG — máx 5MB</p>
+                            <button type="submit"
+                                style="width:100%; background:linear-gradient(135deg, #1565C0, #0D47A1); color:#fff; font-weight:600; padding:8px; border-radius:10px; border:none; cursor:pointer; font-size:12px; display:inline-flex; align-items:center; justify-content:center; gap:4px;">
+                                <i class="ti ti-vaccine" style="font-size:12px;"></i> Guardar vacuna
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-top:16px;">
+                    <a href="{{ route('cliente.mascotas.edit', $mascota->id) }}"
+                        style="flex:1; text-align:center; background:#FFF8E1; color:#F57F17; font-weight:600; padding:10px; border-radius:12px; text-decoration:none; font-size:12px; display:inline-flex; align-items:center; justify-content:center; gap:4px;">
+                        <i class="ti ti-edit" style="font-size:12px;"></i> Editar
+                    </a>
+                    <form method="POST" action="{{ route('cliente.mascotas.destroy', $mascota->id) }}" style="flex:1;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button"
+                            onclick="abrirModal(this.closest('form'), '{{ $mascota->nombre }}')"
+                            style="width:100%; background:#FFEBEE; color:#C62828; font-weight:600; padding:10px; border-radius:12px; border:none; cursor:pointer; font-size:12px; display:inline-flex; align-items:center; justify-content:center; gap:4px;">
+                            <i class="ti ti-trash" style="font-size:12px;"></i> Eliminar
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
         @endforeach
     </div>
 @endif
+
 {{-- Modal de confirmación --}}
-<div id="modal-eliminar" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:white; border-radius:20px; padding:32px; max-width:380px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-        <div style="font-size:56px; margin-bottom:16px;">🗑️</div>
-        <h3 style="font-size:20px; font-weight:700; color:#5d4037; margin-bottom:8px;">¿Eliminar mascota?</h3>
-        <p id="modal-texto" style="font-size:14px; color:#a1887f; margin-bottom:24px;"></p>
+<div id="modal-eliminar" style="display:none; position:fixed; inset:0; background:rgba(26,46,26,0.5); backdrop-filter:blur(4px); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:24px; padding:32px; max-width:400px; width:90%; text-align:center; box-shadow:0 20px 35px -10px rgba(0,0,0,0.15); border:0.5px solid #e0e0e0;">
+        <div style="width:64px; height:64px; background:#FFEBEE; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+            <i class="ti ti-alert-triangle" style="font-size:32px; color:#C62828;"></i>
+        </div>
+        <h3 style="font-size:18px; font-weight:800; color:#1A2E1A; margin-bottom:8px;">¿Eliminar mascota?</h3>
+        <p id="modal-texto" style="font-size:13px; color:#8A9B8A; margin-bottom:24px;"></p>
         <div style="display:flex; gap:12px;">
             <button onclick="cerrarModal()"
-                style="flex:1; background:#f5f0eb; color:#8d6e63; font-weight:600; padding:12px; border-radius:10px; border:none; cursor:pointer; font-size:14px; font-family:Poppins,sans-serif;">
-                Cancelar
+                style="flex:1; background:#fff; border:1.5px solid #e0e0e0; border-radius:14px; padding:12px; font-weight:600; color:#5D6E5D; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+                <i class="ti ti-x" style="font-size:13px;"></i> Cancelar
             </button>
             <button onclick="confirmarEliminar()"
-                style="flex:1; background:linear-gradient(135deg,#ef5350,#e53935); color:white; font-weight:600; padding:12px; border-radius:10px; border:none; cursor:pointer; font-size:14px; font-family:Poppins,sans-serif;">
-                Sí, eliminar
+                style="flex:1; background:linear-gradient(135deg, #EF5350, #C62828); border:none; border-radius:14px; padding:12px; font-weight:700; color:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+                <i class="ti ti-trash" style="font-size:13px;"></i> Sí, eliminar
             </button>
         </div>
     </div>
@@ -183,7 +207,7 @@ let formEliminar = null;
 
 function abrirModal(form, nombre) {
     formEliminar = form;
-    document.getElementById('modal-texto').textContent = '¿Estás segura de que quieres eliminar a ' + nombre + '? Esta acción no se puede deshacer.';
+    document.getElementById('modal-texto').textContent = '¿Estás seguro de que quieres eliminar a ' + nombre + '? Esta acción no se puede deshacer.';
     const modal = document.getElementById('modal-eliminar');
     modal.style.display = 'flex';
 }
@@ -196,8 +220,7 @@ function cerrarModal() {
 function confirmarEliminar() {
     if (formEliminar) formEliminar.submit();
 }
-</script>
-<script>
+
 function toggleVacuna(id) {
     const div = document.getElementById('form-vacuna-' + id);
     div.style.display = div.style.display === 'none' ? 'block' : 'none';

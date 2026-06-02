@@ -1,63 +1,74 @@
 @extends('layouts.dashboard')
 
-@section('page-title', '📅 Mis Citas')
+@section('page-title', 'Mis Citas')
 @section('page-subtitle', 'Historial y estado de tus citas')
 
 @section('content')
 
 @if(session('status'))
-    <div style="background:#e8f5e9; color:#2e7d32; border-left:4px solid #43a047; padding:12px 16px; border-radius:8px; font-size:14px; margin-bottom:16px;">
-        ✅ {{ session('status') }}
+    <div style="background:#E8F5E9; border-left:4px solid #2E7D32; border-radius:12px; padding:14px 18px; margin-bottom:24px; display:flex; align-items:center; gap:10px;">
+        <i class="ti ti-circle-check" style="color:#2E7D32; font-size:18px;"></i>
+        <p style="color:#2E7D32; font-size:13px; font-weight:600; margin:0;">{{ session('status') }}</p>
     </div>
 @endif
+
 @if($errors->any())
-<div class="alert alert-error">
-    ⚠️ {{ $errors->first() }}
-</div>
+    <div style="background:#FFEBEE; border-left:4px solid #C62828; border-radius:12px; padding:14px 18px; margin-bottom:24px; display:flex; align-items:center; gap:10px;">
+        <i class="ti ti-alert-circle" style="color:#C62828; font-size:18px;"></i>
+        <p style="color:#C62828; font-size:13px; font-weight:500; margin:0;">{{ $errors->first() }}</p>
+    </div>
 @endif
 
-<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-    <h2 style="font-size:20px; font-weight:700; color:#5d4037;">Mis Citas</h2>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; flex-wrap:wrap; gap:16px;">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:36px; height:36px; background:linear-gradient(135deg, #FF7043, #F57F17); border-radius:10px; display:flex; align-items:center; justify-content:center;">
+            <i class="ti ti-calendar" style="font-size:18px; color:#fff;"></i>
+        </div>
+        <h2 style="font-size:18px; font-weight:700; color:#1A2E1A; margin:0;">Mis Citas</h2>
+    </div>
     <a href="{{ route('cliente.citas.create') }}"
-        style="background:linear-gradient(135deg,#ff7043,#ff8f00); color:white; font-weight:600; padding:10px 20px; border-radius:10px; text-decoration:none; font-size:14px;">
-        + Solicitar Cita
+        style="background:linear-gradient(135deg, #FF7043, #F57F17); color:#fff; font-weight:600; padding:10px 24px; border-radius:40px; text-decoration:none; font-size:13px; display:inline-flex; align-items:center; gap:8px;">
+        <i class="ti ti-plus" style="font-size:14px;"></i> Solicitar Cita
     </a>
 </div>
 
 @if($citas->isEmpty())
-    <div class="stat-card" style="text-align:center; padding:48px;">
-        <div style="font-size:64px; margin-bottom:16px;">📅</div>
-        <h3 style="font-size:18px; font-weight:700; color:#5d4037;">No tienes citas registradas</h3>
-        <p style="color:#a1887f; margin-top:8px; font-size:14px;">Solicita una cita para tu mascota</p>
+    <div style="background:#fff; border-radius:20px; border:0.5px solid #e0e0e0; text-align:center; padding:56px 24px;">
+        <div style="width:72px; height:72px; background:#F5F5F0; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+            <i class="ti ti-calendar-off" style="font-size:32px; color:#8A9B8A;"></i>
+        </div>
+        <h3 style="font-size:18px; font-weight:700; color:#1A2E1A;">No tienes citas registradas</h3>
+        <p style="color:#8A9B8A; margin-top:6px; font-size:13px;">Solicita una cita para tu mascota</p>
         <a href="{{ route('cliente.citas.create') }}"
-            style="display:inline-block; margin-top:16px; background:linear-gradient(135deg,#ff7043,#ff8f00); color:white; font-weight:600; padding:12px 24px; border-radius:10px; text-decoration:none;">
-            Solicitar primera cita
+            style="display:inline-flex; align-items:center; gap:8px; margin-top:16px; background:linear-gradient(135deg, #FF7043, #F57F17); color:#fff; font-weight:600; padding:12px 28px; border-radius:40px; text-decoration:none;">
+            <i class="ti ti-calendar-plus" style="font-size:14px;"></i> Solicitar primera cita
         </a>
     </div>
 @else
-    <div style="display:flex; flex-direction:column; gap:16px;">
+    <div style="display:flex; flex-direction:column; gap:18px;">
         @foreach($citas as $cita)
-        <div class="stat-card">
-            <div style="display:flex; justify-content:space-between; align-items:start; flex-wrap:wrap; gap:12px;">
+        <div style="background:#fff; border-radius:20px; border:0.5px solid #e0e0e0; padding:24px; transition:box-shadow 0.2s;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:16px;">
 
                 {{-- Info principal --}}
-                <div style="display:flex; gap:16px; align-items:center;">
-                    <div style="font-size:40px;">
-                        @if($cita->mascota->especie === 'perro') 🐶
-                        @elseif($cita->mascota->especie === 'gato') 🐱
-                        @else 🐾
-                        @endif
+                <div style="display:flex; gap:18px; align-items:center;">
+                    <div style="width:56px; height:56px; background:#F5F5F0; border-radius:14px; display:flex; align-items:center; justify-content:center;">
+                        <i class="ti ti-dog" style="font-size:28px; color:#4A7A4A;"></i>
                     </div>
                     <div>
-                        <h3 style="font-size:16px; font-weight:700; color:#5d4037;">{{ $cita->mascota->nombre }}</h3>
-                        <p style="font-size:13px; color:#a1887f;">{{ $cita->servicio->nombre }}</p>
-                        <p style="font-size:13px; color:#8d6e63; margin-top:4px;">
-                            📅 {{ $cita->fecha_hora_inicio->format('d/m/Y') }}
-                            🕐 {{ $cita->fecha_hora_inicio->format('H:i') }}
-                        </p>
+                        <h3 style="font-size:16px; font-weight:800; color:#1A2E1A; margin:0;">{{ $cita->mascota->nombre }}</h3>
+                        <p style="font-size:12px; color:#6B8F6B; margin:2px 0 0;">{{ $cita->servicio->nombre }}</p>
+                        <div style="display:flex; align-items:center; gap:12px; margin-top:6px; flex-wrap:wrap;">
+                            <span style="display:inline-flex; align-items:center; gap:4px; background:#F5F5F0; padding:3px 10px; border-radius:16px; font-size:11px; color:#5D6E5D;">
+                                <i class="ti ti-calendar" style="font-size:11px;"></i> {{ $cita->fecha_hora_inicio->format('d/m/Y') }}
+                            </span>
+                            <span style="display:inline-flex; align-items:center; gap:4px; background:#F5F5F0; padding:3px 10px; border-radius:16px; font-size:11px; color:#5D6E5D;">
+                                <i class="ti ti-clock" style="font-size:11px;"></i> {{ $cita->fecha_hora_inicio->format('H:i') }}
+                            </span>
+                        </div>
                         @if($cita->groomer)
-                        <p style="font-size:12px; color:#a1887f; margin-top:2px;">
-                            ✂️ Groomer: {{ $cita->groomer->nombre }}
+                        <p style="font-size:11px; color:#8A9B8A; margin-top:6px; display:flex; align-items:center; gap:4px;">
+                            <i class="ti ti-scissors" style="font-size:11px;"></i> Groomer: {{ $cita->groomer->nombre }}
                         </p>
                         @endif
                     </div>
@@ -67,20 +78,20 @@
                 <div style="text-align:right;">
                     @php
                         $colores = [
-                            'agendada'   => ['bg'=>'#fff3e0', 'color'=>'#e65100', 'label'=>'⏳ Agendada'],
-                            'confirmada' => ['bg'=>'#e8f5e9', 'color'=>'#2e7d32', 'label'=>'✅ Confirmada'],
-                            'en_progreso'=> ['bg'=>'#e3f2fd', 'color'=>'#1565c0', 'label'=>'🔄 En progreso'],
-                            'completada' => ['bg'=>'#f3e5f5', 'color'=>'#6a1b9a', 'label'=>'🎉 Completada'],
-                            'cancelada'  => ['bg'=>'#ffebee', 'color'=>'#c62828', 'label'=>'❌ Cancelada'],
-                            'no_asistio' => ['bg'=>'#fafafa', 'color'=>'#757575', 'label'=>'😔 No asistió'],
-                            'en_revision' => ['bg'=>'#f3e5f5', 'color'=>'#6a1b9a', 'label'=>'🔍 En revisión'],
+                            'agendada'   => ['bg'=>'#FFF8E1', 'color'=>'#F57F17', 'icon'=>'ti-calendar', 'label'=>'Agendada'],
+                            'confirmada' => ['bg'=>'#E8F5E9', 'color'=>'#2E7D32', 'icon'=>'ti-check', 'label'=>'Confirmada'],
+                            'en_progreso'=> ['bg'=>'#E3F2FD', 'color'=>'#1565C0', 'icon'=>'ti-progress', 'label'=>'En progreso'],
+                            'completada' => ['bg'=>'#F3E5F5', 'color'=>'#6A1B9A', 'icon'=>'ti-circle-check', 'label'=>'Completada'],
+                            'cancelada'  => ['bg'=>'#FFEBEE', 'color'=>'#C62828', 'icon'=>'ti-x', 'label'=>'Cancelada'],
+                            'no_asistio' => ['bg'=>'#FAFAFA', 'color'=>'#757575', 'icon'=>'ti-user-off', 'label'=>'No asistió'],
+                            'en_revision'=> ['bg'=>'#F3E5F5', 'color'=>'#6A1B9A', 'icon'=>'ti-search', 'label'=>'En revisión'],
                         ];
-                        $c = $colores[$cita->estado] ?? ['bg'=>'#f5f5f5', 'color'=>'#333', 'label'=>$cita->estado];
+                        $c = $colores[$cita->estado] ?? ['bg'=>'#F5F5F0', 'color'=>'#8A9B8A', 'icon'=>'ti-help', 'label'=>$cita->estado];
                     @endphp
-                    <span style="background:{{ $c['bg'] }}; color:{{ $c['color'] }}; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
-                        {{ $c['label'] }}
+                    <span style="background:{{ $c['bg'] }}; color:{{ $c['color'] }}; padding:5px 14px; border-radius:30px; font-size:11px; font-weight:700; display:inline-flex; align-items:center; gap:5px;">
+                        <i class="ti {{ $c['icon'] }}" style="font-size:11px;"></i> {{ $c['label'] }}
                     </span>
-                    <p style="font-size:16px; font-weight:700; color:#5d4037; margin-top:8px;">
+                    <p style="font-size:18px; font-weight:800; color:#FF7043; margin:8px 0 0;">
                         Bs. {{ number_format($cita->precio_acordado, 2) }}
                     </p>
 
@@ -90,8 +101,8 @@
                         @method('DELETE')
                         <button type="button"
                             onclick="abrirModalCancelar(this.closest('form'))"
-                            style="background:#ffebee; color:#c62828; font-weight:600; padding:6px 14px; border-radius:8px; border:none; cursor:pointer; font-size:12px; font-family:Poppins,sans-serif;">
-                            Cancelar cita
+                            style="background:#FFEBEE; color:#C62828; font-weight:600; padding:6px 16px; border-radius:40px; border:none; cursor:pointer; font-size:11px; display:inline-flex; align-items:center; gap:4px;">
+                            <i class="ti ti-x" style="font-size:12px;"></i> Cancelar cita
                         </button>
                     </form>
                     @endif
@@ -99,8 +110,9 @@
             </div>
 
             @if($cita->notas_cliente)
-            <div style="background:#f5f0eb; border-radius:8px; padding:8px 12px; margin-top:12px;">
-                <p style="font-size:12px; color:#8d6e63;">📝 {{ $cita->notas_cliente }}</p>
+            <div style="background:#F9FBF6; border-radius:12px; padding:10px 14px; margin-top:14px; display:flex; align-items:center; gap:8px;">
+                <i class="ti ti-notes" style="font-size:14px; color:#8A9B8A;"></i>
+                <p style="font-size:12px; color:#5D6E5D; margin:0;">{{ $cita->notas_cliente }}</p>
             </div>
             @endif
         </div>
@@ -109,24 +121,29 @@
 @endif
 
 {{-- Modal cancelar --}}
-<div id="modal-cancelar" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:white; border-radius:20px; padding:32px; max-width:420px; width:90%; text-align:center;">
-        <div style="font-size:48px; margin-bottom:16px;">⚠️</div>
-        <h3 style="font-size:18px; font-weight:700; color:#5d4037; margin-bottom:8px;">Cancelar cita</h3>
-        <p style="font-size:13px; color:#a1887f; margin-bottom:16px;">Por favor indica el motivo de cancelación.</p>
+<div id="modal-cancelar" style="display:none; position:fixed; inset:0; background:rgba(26,46,26,0.5); backdrop-filter:blur(4px); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:24px; padding:32px; max-width:450px; width:90%; box-shadow:0 20px 35px -10px rgba(0,0,0,0.15); border:0.5px solid #e0e0e0;">
+        <div style="text-align:center; margin-bottom:20px;">
+            <div style="width:64px; height:64px; background:#FFEBEE; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
+                <i class="ti ti-alert-triangle" style="font-size:32px; color:#C62828;"></i>
+            </div>
+            <h3 style="font-size:18px; font-weight:800; color:#1A2E1A; margin:0;">Cancelar cita</h3>
+            <p style="font-size:12px; color:#8A9B8A; margin-top:6px;">Por favor indica el motivo de cancelación.</p>
+        </div>
 
         <form id="form-cancelar" method="POST">
             @csrf
             @method('DELETE')
 
             {{-- Motivo --}}
-            <div style="text-align:left; margin-bottom:16px;">
-                <label style="display:block; font-size:13px; font-weight:600; color:#5d4037; margin-bottom:6px;">
-                    Motivo de cancelación *
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-size:12px; font-weight:700; color:#4A7A4A; margin-bottom:8px;">
+                    <i class="ti ti-list" style="font-size:12px;"></i> Motivo de cancelación *
                 </label>
-                <select name="motivo" id="select-motivo"
-                    onchange="mostrarOtroMotivo(this)"
-                    style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif; margin-bottom:8px;"
+                <select name="motivo" id="select-motivo" onchange="mostrarOtroMotivo(this)"
+                    style="width:100%; border:1.5px solid #e0e0e0; border-radius:12px; padding:12px 14px; font-size:13px; outline:none; background:#FAFBF7; cursor:pointer; transition:all 0.2s;"
+                    onfocus="this.style.borderColor='#C62828'; this.style.background='#fff'"
+                    onblur="this.style.borderColor='#e0e0e0'; this.style.background='#FAFBF7'"
                     required>
                     <option value="">Selecciona un motivo...</option>
                     <option value="Problemas de salud de la mascota">🐾 Salud de la mascota</option>
@@ -136,16 +153,20 @@
                     <option value="Cambio de planes">📅 Cambio de planes</option>
                     <option value="otro">✏️ Otro motivo</option>
                 </select>
-                <div id="div-otro-motivo" style="display:none;">
+                <div id="div-otro-motivo" style="display:none; margin-top:8px;">
                     <input type="text" name="motivo_otro" placeholder="Especifica el motivo..."
-                        style="width:100%; border:2px solid #d7ccc8; border-radius:10px; padding:10px 14px; font-size:14px; outline:none; font-family:Poppins,sans-serif;">
+                        style="width:100%; border:1.5px solid #e0e0e0; border-radius:12px; padding:12px 14px; font-size:13px; outline:none; background:#FAFBF7; transition:all 0.2s;"
+                        onfocus="this.style.borderColor='#C62828'; this.style.background='#fff'"
+                        onblur="this.style.borderColor='#e0e0e0'; this.style.background='#FAFBF7'">
                 </div>
             </div>
 
             {{-- Política de cancelación --}}
-            <div style="background:#fff3e0; border-radius:10px; padding:12px 16px; margin-bottom:16px; text-align:left;">
-                <p style="font-size:13px; font-weight:600; color:#e65100; margin-bottom:8px;">📋 Política de cancelación:</p>
-                <ul style="font-size:12px; color:#bf360c; margin:0; padding-left:16px;">
+            <div style="background:#FFF8E1; border-radius:14px; padding:14px 18px; margin-bottom:20px;">
+                <p style="font-size:12px; font-weight:700; color:#E65100; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                    <i class="ti ti-file-text" style="font-size:13px;"></i> Política de cancelación:
+                </p>
+                <ul style="font-size:11px; color:#BF360C; margin:0; padding-left:18px;">
                     <li>Las cancelaciones deben realizarse con <strong>al menos 24 horas de anticipación</strong>.</li>
                     <li>Cancelaciones tardías pueden afectar futuras reservas.</li>
                     <li>El slot quedará disponible para otros clientes.</li>
@@ -153,22 +174,22 @@
             </div>
 
             {{-- Aceptar términos --}}
-            <div style="display:flex; align-items:start; gap:10px; margin-bottom:20px; text-align:left;">
+            <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:24px;">
                 <input type="checkbox" id="acepta-terminos" required
-                    style="margin-top:3px; width:18px; height:18px; accent-color:#ff7043; flex-shrink:0;">
-                <label for="acepta-terminos" style="font-size:13px; color:#5d4037; cursor:pointer;">
+                    style="margin-top:2px; width:18px; height:18px; accent-color:#C62828; flex-shrink:0;">
+                <label for="acepta-terminos" style="font-size:12px; color:#5D6E5D; cursor:pointer;">
                     Entiendo y acepto la política de cancelación del Pet Spa.
                 </label>
             </div>
 
             <div style="display:flex; gap:12px;">
                 <button type="button" onclick="cerrarModalCancelar()"
-                    style="flex:1; background:#f5f0eb; color:#8d6e63; font-weight:600; padding:12px; border-radius:10px; border:none; cursor:pointer; font-family:Poppins,sans-serif;">
-                    Volver
+                    style="flex:1; background:#fff; border:1.5px solid #e0e0e0; border-radius:14px; padding:12px; font-weight:600; color:#5D6E5D; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+                    <i class="ti ti-arrow-left" style="font-size:13px;"></i> Volver
                 </button>
                 <button type="submit"
-                    style="flex:1; background:linear-gradient(135deg,#ef5350,#e53935); color:white; font-weight:600; padding:12px; border-radius:10px; border:none; cursor:pointer; font-family:Poppins,sans-serif;">
-                    Confirmar cancelación
+                    style="flex:1; background:linear-gradient(135deg, #EF5350, #C62828); border:none; border-radius:14px; padding:12px; font-weight:700; color:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+                    <i class="ti ti-x" style="font-size:13px;"></i> Confirmar cancelación
                 </button>
             </div>
         </form>
@@ -208,7 +229,6 @@ document.getElementById('form-cancelar').addEventListener('submit', function(e) 
         return;
     }
 
-    // Si eligió "otro" usar el campo de texto
     if (select.value === 'otro') {
         const otro = document.querySelector('input[name="motivo_otro"]').value;
         if (!otro) {

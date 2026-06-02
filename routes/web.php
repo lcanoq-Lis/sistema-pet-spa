@@ -115,7 +115,7 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
     // --------------------------------------------------------------------
     // GRUPO: GROOMERS
     // --------------------------------------------------------------------
-    Route::prefix('groomer')->name('groomer.')->group(function () {
+    Route::prefix('groomer')->name('groomer.')->middleware('role:groomer')->group(function () {
         // Agenda
         Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda.index');
         Route::post('/agenda/{id}/confirmar', [AgendaController::class, 'confirmar'])->name('agenda.confirmar');
@@ -144,7 +144,7 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
     // --------------------------------------------------------------------
 // GRUPO: RECEPCIÓN
 // --------------------------------------------------------------------
-Route::prefix('recepcion')->name('recepcion.')->group(function () {
+ Route::prefix('recepcion')->name('recepcion.')->group(function () {
 
     // Citas
     Route::get('/citas', [RecepcionCitaController::class, 'index'])->name('citas.index');
