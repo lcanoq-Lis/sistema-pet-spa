@@ -36,7 +36,7 @@ class AlertaConsumoGroomer extends Command
                             ['groomer' => $groomer, 'total' => $totalInsumos, 'limite' => $limite],
                             function($m) use ($admin, $groomer) {
                                 $m->to($admin->email)
-                                  ->subject("⚠️ Alto consumo de insumos — {$groomer->nombre}");
+                                  ->subject("Alto consumo de insumos - {$groomer->nombre}");
                             }
                         );
                     } catch (\Exception $e) {
