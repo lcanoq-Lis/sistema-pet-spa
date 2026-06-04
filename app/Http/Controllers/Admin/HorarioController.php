@@ -28,19 +28,20 @@ class HorarioController extends Controller
     public function actualizarHorario(Request $request)
     {
         $request->validate([
-            'horarios'                  => 'required|array',
-            'horarios.*.dia_semana'     => 'required|integer|between:0,6',
-            'horarios.*.hora_apertura'  => 'required|date_format:H:i',
-            'horarios.*.hora_cierre'    => 'required|date_format:H:i|after:horarios.*.hora_apertura',
-        ]);
+    'horarios'                  => 'required|array',
+    'horarios.*.dia_semana'     => 'required|integer|between:0,6',
+    'horarios.*.hora_apertura'  => 'nullable|date_format:H:i',
+    'horarios.*.hora_cierre'    => 'nullable|date_format:H:i',
+]);
 
         foreach ($request->horarios as $data) {
-            HorarioSpa::where('dia_semana', $data['dia_semana'])->update([
-                'hora_apertura' => $data['hora_apertura'],
-                'hora_cierre'   => $data['hora_cierre'],
-                'activo'        => isset($data['activo']) ? true : false,
-            ]);
-        }
+    $activo = isset($data['activo']) ? true : false;
+    HorarioSpa::where('dia_semana', $data['dia_semana'])->update([
+        'hora_apertura' => $data['hora_apertura'] ?? '09:00',
+        'hora_cierre'   => $data['hora_cierre'] ?? '18:00',
+        'activo'        => $activo,
+    ]);
+}
 
         return back()->with('status', 'Horario laboral actualizado correctamente.');
     }

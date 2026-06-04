@@ -280,8 +280,16 @@
         </div>
         <div>
             <p style="font-size:14px; font-weight:700; color:#1A2E1A; margin:0 0 3px;">Mi cuenta</p>
+            
             <p style="font-size:12px; color:#6B8F6B; margin:0;">Cambiar contraseña</p>
         </div>
+        <a href="{{ route('groomer.reportes.index') }}" class="stat-card" style="text-decoration:none; display:flex; align-items:center; gap:14px;">
+        <div style="font-size:32px;">📊</div>
+        <div>
+            <p style="font-size:14px; font-weight:700; color:#1A2E1A; margin-bottom:2px;">Mis Reportes</p>
+            <p style="font-size:12px; color:#6B8F6B;">Productividad e insumos</p>
+        </div>
+    </a>
         <i class="ti ti-chevron-right" style="margin-left:auto; color:#aaa; font-size:18px;"></i>
     </a>
 </div>

@@ -8,7 +8,8 @@ return new class extends Migration {
     public function up(): void {
         Schema::table('users', function (Blueprint $table) {
             if (!Schema::hasColumn('users', 'rol_id')) {
-                $table->unsignedInteger('rol_id')->nullable();
+                // CAMBIADO: unsignedBigInteger en lugar de unsignedInteger
+                $table->unsignedBigInteger('rol_id')->nullable();
                 $table->foreign('rol_id')->references('id')->on('roles')->nullOnDelete();
             }
             if (!Schema::hasColumn('users', 'ci'))
@@ -40,6 +41,9 @@ return new class extends Migration {
 
     public function down(): void {
         Schema::table('users', function (Blueprint $table) {
+            // Primero eliminar la foreign key
+            $table->dropForeign(['rol_id']);
+            
             $table->dropColumn([
                 'rol_id', 'ci', 'proveedor_oauth', 'oauth_id',
                 'email_verificado', 'token_verificacion', 'token_expira_en',

@@ -36,6 +36,10 @@ use Illuminate\Support\Facades\Schedule;
 use App\Http\Controllers\Admin\PromocionController;
 
 use App\Http\Controllers\Cliente\PerfilController;
+use App\Http\Controllers\Cliente\CarritoController;
+
+use App\Http\Controllers\Groomer\ReporteGroomerController;
+
 
 Schedule::command('citas:recordatorios')->dailyAt('08:00');
 Schedule::command('recordatorios:enviar')->hourly();
@@ -107,9 +111,18 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
         // Tienda dentro del contexto del cliente
         Route::get('/tienda', [TiendaController::class, 'index'])->name('tienda.index');
 
+        Route::get('/carrito', [CarritoController::class, 'index'])->name('carrito.index');
+        Route::post('/carrito/agregar', [CarritoController::class, 'agregar'])->name('carrito.agregar');
+        Route::post('/carrito/cupon', [CarritoController::class, 'aplicarCupon'])->name('carrito.cupon');
+        Route::delete('/carrito/cupon/quitar', [CarritoController::class, 'quitarCupon'])->name('carrito.cupon.quitar');
+        Route::patch('/carrito/{item}', [CarritoController::class, 'actualizar'])->name('carrito.actualizar');
+        Route::delete('/carrito/{item}', [CarritoController::class, 'eliminar'])->name('carrito.eliminar');
+        Route::post('/carrito/confirmar', [CarritoController::class, 'confirmar'])->name('carrito.confirmar');
+
         Route::get('/perfil', [PerfilController::class, 'edit'])->name('perfil.edit');
         Route::put('/perfil', [PerfilController::class, 'update'])->name('perfil.update');
         Route::post('/perfil/password', [PerfilController::class, 'cambiarPassword'])->name('perfil.password');
+
     });
 
     // --------------------------------------------------------------------
@@ -129,6 +142,9 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
         // CORREGIDO: Ahora sí acepta PUT para coincidir perfectamente con edit.blade.php
         Route::put('/ficha/{id}/actualizar', [FichaController::class, 'update'])->name('ficha.update'); 
         Route::post('/ficha/{id}/cerrar', [FichaController::class, 'cerrar'])->name('ficha.cerrar');
+
+        //reportes groomer
+        Route::get('/reportes', [ReporteGroomerController::class, 'index'])->name('reportes.index');
         
         // Fotos de Evidencia
         Route::post('/ficha/{id}/foto', [FichaController::class, 'agregarFoto'])->name('ficha.foto');
