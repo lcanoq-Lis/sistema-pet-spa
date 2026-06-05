@@ -134,35 +134,35 @@ Route::get('/reportes/excel', [ReporteClienteController::class, 'descargarExcel'
 
     });
 
-    // --------------------------------------------------------------------
+  // --------------------------------------------------------------------
     // GRUPO: GROOMERS
     // --------------------------------------------------------------------
-  Route::prefix('groomer')->name('groomer.')->middleware('role:groomer')->group(function () {
-    // Agenda
-    Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda.index');
-    Route::post('/agenda/{id}/confirmar', [AgendaController::class, 'confirmar'])->name('agenda.confirmar');
-    Route::post('/agenda/{id}/cancelar', [AgendaController::class, 'cancelar'])->name('agenda.cancelar');
+    Route::prefix('groomer')->name('groomer.')->middleware('role:groomer')->group(function () {
+        // Agenda
+        Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda.index');
+        Route::post('/agenda/{id}/confirmar', [AgendaController::class, 'confirmar'])->name('agenda.confirmar');
+        Route::post('/agenda/{id}/cancelar', [AgendaController::class, 'cancelar'])->name('agenda.cancelar');
 
-    // Fichas de Grooming
-    Route::get('/ficha/crear/{citaId}', [FichaController::class, 'create'])->name('ficha.create');
-    Route::post('/ficha', [FichaController::class, 'store'])->name('ficha.store');
-    Route::get('/ficha/{id}/editar', [FichaController::class, 'edit'])->name('ficha.edit');
-    Route::put('/ficha/{id}/actualizar', [FichaController::class, 'update'])->name('ficha.update');
-    Route::post('/ficha/{id}/cerrar', [FichaController::class, 'cerrar'])->name('ficha.cerrar');
+        // Fichas de Grooming
+        Route::get('/ficha/crear/{citaId}', [FichaController::class, 'create'])->name('ficha.create');
+        Route::post('/ficha', [FichaController::class, 'store'])->name('ficha.store');
+        Route::get('/ficha/{id}/editar', [FichaController::class, 'edit'])->name('ficha.edit');
+        Route::put('/ficha/{id}/actualizar', [FichaController::class, 'update'])->name('ficha.update');
+        Route::post('/ficha/{id}/cerrar', [FichaController::class, 'cerrar'])->name('ficha.cerrar');
 
-    // Fotos de Evidencia
-    Route::post('/ficha/{id}/foto', [FichaController::class, 'agregarFoto'])->name('ficha.foto');
-    Route::delete('/ficha/foto/{id}', [FichaController::class, 'eliminarFoto'])->name('ficha.foto.eliminar');
+        // Fotos de Evidencia
+        Route::post('/ficha/{id}/foto', [FichaController::class, 'agregarFoto'])->name('ficha.foto');
+        Route::delete('/ficha/foto/{id}', [FichaController::class, 'eliminarFoto'])->name('ficha.foto.eliminar');
 
-    // Insumos de la Ficha
-    Route::post('/ficha/{id}/insumo', [FichaController::class, 'storeInsumo'])->name('ficha.insumo.store');
-    Route::delete('/ficha/{fichaId}/insumo/{insumoId}', [FichaController::class, 'destroyInsumo'])->name('ficha.insumo.destroy');
+        // Insumos de la Ficha
+        Route::post('/ficha/{id}/insumo', [FichaController::class, 'storeInsumo'])->name('ficha.insumo.store');
+        Route::delete('/ficha/{fichaId}/insumo/{insumoId}', [FichaController::class, 'destroyInsumo'])->name('ficha.insumo.destroy');
 
-    // Reportes
-    Route::get('/reportes', [ReporteGroomerController::class, 'index'])->name('reportes.index');
-    Route::get('/reportes/pdf', [ReporteGroomerController::class, 'descargarPDF'])->name('reportes.pdf');
-    Route::get('/reportes/excel', [ReporteGroomerController::class, 'descargarExcel'])->name('reportes.excel');
-});
+        // Reportes (Corregido para apuntar a exportarPDF y exportarExcel)
+        Route::get('/reportes', [ReporteGroomerController::class, 'index'])->name('reportes.index');
+        Route::get('/reportes/pdf', [ReporteGroomerController::class, 'exportarPDF'])->name('reportes.pdf');
+        Route::get('/reportes/excel', [ReporteGroomerController::class, 'exportarExcel'])->name('reportes.excel');
+    });
     // --------------------------------------------------------------------
 // GRUPO: RECEPCIÓN
 // --------------------------------------------------------------------
