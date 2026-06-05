@@ -32,6 +32,7 @@
             ['route'=>'cliente.mascotas.index', 'icon'=>'ti-dog',            'label'=>'Mascotas',    'sub'=>'Gestionar perfiles',   'bg'=>'#E8F5E9','ic'=>'#2E7D32'],
             ['route'=>'cliente.historial',      'icon'=>'ti-clipboard-list', 'label'=>'Historial',   'sub'=>'Servicios pasados',    'bg'=>'#F1F8E9','ic'=>'#558B2F'],
             ['route'=>'cliente.tienda.index',   'icon'=>'ti-shopping-bag',   'label'=>'Tienda',      'sub'=>'Ver productos',        'bg'=>'#FFF8E1','ic'=>'#F57F17'],
+            ['route'=>'cliente.reportes.index', 'icon'=>'ti-chart-bar', 'label'=>'Mi Historial', 'sub'=>'Citas y puntos', 'bg'=>'#E3F2FD','ic'=>'#1565C0'],
             ['route'=>'password.cambiar',       'icon'=>'ti-lock',           'label'=>'Mi cuenta',   'sub'=>'Cambiar contraseña',   'bg'=>'#FFEBEE','ic'=>'#C62828'],
         ] as $item)
         <a href="{{ route($item['route']) }}" style="flex:1 1 160px; min-width:140px; max-width:180px; text-decoration:none; background:#fff; border:0.5px solid #e0e0e0; border-radius:16px; padding:18px 12px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px; transition:all 0.2s;">

@@ -39,6 +39,9 @@ use App\Http\Controllers\Cliente\PerfilController;
 use App\Http\Controllers\Cliente\CarritoController;
 
 use App\Http\Controllers\Groomer\ReporteGroomerController;
+use App\Http\Controllers\Cliente\ReporteClienteController;
+use App\Http\Controllers\Admin\AuditoriaInsumosController;
+
 
 
 Schedule::command('citas:recordatorios')->dailyAt('08:00');
@@ -119,44 +122,47 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
         Route::delete('/carrito/{item}', [CarritoController::class, 'eliminar'])->name('carrito.eliminar');
         Route::post('/carrito/confirmar', [CarritoController::class, 'confirmar'])->name('carrito.confirmar');
 
+        Route::get('/reportes', [ReporteClienteController::class, 'index'])->name('reportes.index');
+
         Route::get('/perfil', [PerfilController::class, 'edit'])->name('perfil.edit');
         Route::put('/perfil', [PerfilController::class, 'update'])->name('perfil.update');
         Route::post('/perfil/password', [PerfilController::class, 'cambiarPassword'])->name('perfil.password');
+
+       Route::get('/reportes/pdf', [ReporteClienteController::class, 'descargarPDF'])->name('reportes.pdf');
+Route::get('/reportes/excel', [ReporteClienteController::class, 'descargarExcel'])->name('reportes.excel');
+
 
     });
 
     // --------------------------------------------------------------------
     // GRUPO: GROOMERS
     // --------------------------------------------------------------------
-    Route::prefix('groomer')->name('groomer.')->middleware('role:groomer')->group(function () {
-        // Agenda
-        Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda.index');
-        Route::post('/agenda/{id}/confirmar', [AgendaController::class, 'confirmar'])->name('agenda.confirmar');
-        Route::post('/agenda/{id}/cancelar', [AgendaController::class, 'cancelar'])->name('agenda.cancelar');
+  Route::prefix('groomer')->name('groomer.')->middleware('role:groomer')->group(function () {
+    // Agenda
+    Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda.index');
+    Route::post('/agenda/{id}/confirmar', [AgendaController::class, 'confirmar'])->name('agenda.confirmar');
+    Route::post('/agenda/{id}/cancelar', [AgendaController::class, 'cancelar'])->name('agenda.cancelar');
 
-        // Fichas de Grooming
-        Route::get('/ficha/crear/{citaId}', [FichaController::class, 'create'])->name('ficha.create');
-        Route::post('/ficha', [FichaController::class, 'store'])->name('ficha.store');
-        Route::get('/ficha/{id}/editar', [FichaController::class, 'edit'])->name('ficha.edit');
-        
-        // CORREGIDO: Ahora sí acepta PUT para coincidir perfectamente con edit.blade.php
-        Route::put('/ficha/{id}/actualizar', [FichaController::class, 'update'])->name('ficha.update'); 
-        Route::post('/ficha/{id}/cerrar', [FichaController::class, 'cerrar'])->name('ficha.cerrar');
+    // Fichas de Grooming
+    Route::get('/ficha/crear/{citaId}', [FichaController::class, 'create'])->name('ficha.create');
+    Route::post('/ficha', [FichaController::class, 'store'])->name('ficha.store');
+    Route::get('/ficha/{id}/editar', [FichaController::class, 'edit'])->name('ficha.edit');
+    Route::put('/ficha/{id}/actualizar', [FichaController::class, 'update'])->name('ficha.update');
+    Route::post('/ficha/{id}/cerrar', [FichaController::class, 'cerrar'])->name('ficha.cerrar');
 
-        //reportes groomer
-        Route::get('/reportes', [ReporteGroomerController::class, 'index'])->name('reportes.index');
-        
-        // Fotos de Evidencia
-        Route::post('/ficha/{id}/foto', [FichaController::class, 'agregarFoto'])->name('ficha.foto');
-        
-        // Ajustado de {fotoId} a {id} para mantener consistencia semántica en los parámetros
-        Route::delete('/ficha/foto/{id}', [FichaController::class, 'eliminarFoto'])->name('ficha.foto.eliminar');
-    
-        // Insumos de la Ficha
-        Route::post('/ficha/{id}/insumo', [FichaController::class, 'storeInsumo'])->name('ficha.insumo.store');
-        Route::delete('/ficha/{fichaId}/insumo/{insumoId}', [FichaController::class, 'destroyInsumo'])->name('ficha.insumo.destroy');
-    });
+    // Fotos de Evidencia
+    Route::post('/ficha/{id}/foto', [FichaController::class, 'agregarFoto'])->name('ficha.foto');
+    Route::delete('/ficha/foto/{id}', [FichaController::class, 'eliminarFoto'])->name('ficha.foto.eliminar');
 
+    // Insumos de la Ficha
+    Route::post('/ficha/{id}/insumo', [FichaController::class, 'storeInsumo'])->name('ficha.insumo.store');
+    Route::delete('/ficha/{fichaId}/insumo/{insumoId}', [FichaController::class, 'destroyInsumo'])->name('ficha.insumo.destroy');
+
+    // Reportes
+    Route::get('/reportes', [ReporteGroomerController::class, 'index'])->name('reportes.index');
+    Route::get('/reportes/pdf', [ReporteGroomerController::class, 'descargarPDF'])->name('reportes.pdf');
+    Route::get('/reportes/excel', [ReporteGroomerController::class, 'descargarExcel'])->name('reportes.excel');
+});
     // --------------------------------------------------------------------
 // GRUPO: RECEPCIÓN
 // --------------------------------------------------------------------
@@ -193,6 +199,7 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
     Route::post('/clientes/{id}/mascota', [RecepcionClienteController::class, 'storeMascota'])->name('clientes.mascota.store');
     Route::get('/clientes/{id}', [RecepcionClienteController::class, 'show'])->name('clientes.show');
 
+
 });
 
     // --------------------------------------------------------------------
@@ -226,6 +233,11 @@ Route::middleware(['auth', \App\Http\Middleware\AutoLogout::class])->group(funct
         Route::post('/configuracion', [HorarioController::class, 'guardarConfiguracion'])->name('configuracion.guardar');
         Route::get('/servicios/{id}/checklist', [ServicioController::class, 'checklist'])->name('servicios.checklist');
 Route::post('/servicios/{id}/checklist', [ServicioController::class, 'guardarChecklist'])->name('servicios.checklist.guardar');
+Route::get('/auditoria/insumos', [AuditoriaInsumosController::class, 'index'])->name('auditoria.insumos');
+
+
+Route::get('/reportes/pdf', [ReporteController::class, 'exportarPDF'])->name('reportes.pdf');
+Route::get('/reportes/excel', [ReporteController::class, 'exportarExcel'])->name('reportes.excel');
     });
 
 });

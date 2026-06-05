@@ -22,7 +22,7 @@
             <i class="ti ti-filter" style="font-size:14px;"></i> Ver reporte
         </button>
     </form>
-</div>
+
 
 {{-- KPIs --}}
 <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:16px; margin-bottom:24px;">
@@ -103,6 +103,18 @@
         </div>
         @endif
     </div>
+       {{-- Botones de Exportación --}}
+    <div style="display:flex; gap:10px; align-items:center;">
+        <a href="{{ route('groomer.reportes.pdf', ['mes'=>$mes,'anio'=>$anio]) }}"
+            style="display:inline-flex; align-items:center; gap:6px; background:#C62828; color:#fff; font-weight:600; padding:8px 20px; border-radius:40px; text-decoration:none; font-size:13px;">
+            <i class="ti ti-file-type-pdf" style="font-size:15px;"></i> PDF
+        </a>
+        <a href="{{ route('groomer.reportes.excel', ['mes'=>$mes,'anio'=>$anio]) }}"
+            style="display:inline-flex; align-items:center; gap:6px; background:#1B5E20; color:#fff; font-weight:600; padding:8px 20px; border-radius:40px; text-decoration:none; font-size:13px;">
+            <i class="ti ti-file-type-xls" style="font-size:15px;"></i> Excel
+        </a>
+    </div>
+</div>
 
 </div>
 
